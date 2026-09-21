@@ -123,6 +123,25 @@
     input.addEventListener("input", run);
   }
 
+  // ── 숫자 카운트업 ─────────────────────────────────────────────────────────
+  var counters = document.querySelectorAll("[data-count]");
+  function countUp(el) {
+    var end = parseInt(el.getAttribute("data-count"), 10) || 0, start = 0, t0 = null, dur = 1400;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur), v = Math.round(start + (end - start) * (1 - Math.pow(1 - p, 3)));
+      el.textContent = v.toLocaleString("ko-KR");
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if (counters.length && "IntersectionObserver" in window && !/[?&]capture=1/.test(location.search)) {
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { countUp(e.target); cio.unobserve(e.target); } });
+    }, { threshold: 0.4 });
+    counters.forEach(function (el) { cio.observe(el); });
+  }
+
   // ── FAQ: 하나 열면 나머지 닫기 (같은 그룹 내) ─────────────────────────────
   document.querySelectorAll(".faq[data-single]").forEach(function (group) {
     group.querySelectorAll("details").forEach(function (d) {

@@ -14,7 +14,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from site_info import SITE, NAV, DIRECTORS, FEATURED, TICKER_ROW1, TICKER_ROW2, STATS, CORE, WHO, WHY, HOME_FAQ
+from site_info import SITE, NAV, DIRECTORS, FEATURED, TICKER_ROW1, TICKER_ROW2, STATS, CORE, WHO, WHY, HOME_FAQ, RECORD
 from services import SERVICES
 from conditions import CONDITIONS, CONDITION_CATEGORIES
 from columns import COLUMNS, PRINCIPLES, PATIENT_QUESTIONS, FAQ_GROUPS
@@ -111,7 +111,7 @@ def main():
     # 홈
     pages.append(render("index.html", "index.html",
                         featured=FEATURED, ticker1=TICKER_ROW1, ticker2=TICKER_ROW2, ticker_links=TICKER_LINKS,
-                        stats=STATS, core=CORE, who=WHO, why=WHY, home_faq=HOME_FAQ,
+                        stats=STATS, record=RECORD, core=CORE, who=WHO, why=WHY, home_faq=HOME_FAQ,
                         search_index=json.dumps(search_index(), ensure_ascii=False)))
 
     # 진료 안내

@@ -216,7 +216,13 @@ button { font-family: inherit; cursor: pointer; }
 .stat .label { margin-top: 10px; font-size: 15px; color: rgba(255,255,255,.85); }
 .stat .sub { font-size: 13px; color: rgba(255,255,255,.55); margin-top: 4px; }
 .stats-note { margin-top: 36px; font-size: 12px; color: rgba(255,255,255,.5); }
-@media (max-width: 820px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+.stats-3 { grid-template-columns: repeat(3, 1fr); }
+.stat .pending { font-size: .6em; color: var(--goldsoft); letter-spacing: .04em; }
+.section.ivory .stat .num { color: var(--jadedeep); }
+.section.ivory .stat .label { color: var(--ink); }
+.section.ivory .stat .sub, .section.ivory .stats-note { color: var(--inkfade); }
+@media (max-width: 820px) { .stats, .stats-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .stats-3 { grid-template-columns: 1fr; } }
 
 /* ── 그리드 카드 (핵심 진료 등) ─────────────────────────────────────────── */
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
