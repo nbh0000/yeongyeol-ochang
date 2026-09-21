@@ -96,10 +96,14 @@
         <h4>다른 진료 안내</h4>
         <ul>{% for o in services if o.slug != s.slug %}<li><a href="{{ root }}services/{{ o.slug }}.html">{{ o.name }} →</a></li>{% endfor %}</ul>
       </div>
-      <div class="side-card">
-        <h4>진료 원장</h4>
-        <p><b>{{ s.reviewer }}</b></p>
-        <p class="small muted">원장별 진료 요일은 원장 소개 페이지에서 확인하세요.</p>
+      <div class="side-card reviewer-card">
+        <h4>담당 원장</h4>
+        {% set rv = directors_by_name[s.reviewer[:3]] %}
+        <a href="{{ root }}about.html#{{ rv.slug }}" class="reviewer">
+          <img src="{{ root }}{{ rv.photo }}" alt="{{ rv.name }} {{ rv.role }}" loading="lazy">
+          <span><b>{{ rv.name }} {{ rv.role }}</b><small>{{ rv.specialty | join(' · ') }}</small></span>
+        </a>
+        <p class="small muted" style="margin-top:10px">원장별 진료 요일은 원장 소개 페이지에서 확인하세요.</p>
         <a class="btn btn-outline" href="{{ root }}about.html">원장 소개 보기</a>
       </div>
     </aside>

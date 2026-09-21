@@ -115,5 +115,38 @@ def main():
     save(D(lg, "KakaoTalk_20251121_200753637.png"), "logo/symbol-green-512", 512, fmt="png", crop=(0, 0, 1573, 560))
 
 
+
+def hero_composites():
+    """세로 스튜디오 사진을 가로 히어로로 확장: 사진 가장자리 색을 좌우로 늘려 배경을 잇는다."""
+    D = lambda *p: os.path.join(A, *p)
+    # 신재형 원장 (2400x3600, 회색 그라데이션 배경) → 1920x1100 히어로, 인물은 우측
+    im = Image.open(D("06_원장프로필_진료시간표", "KakaoTalk_20260820_200907542.jpg")).convert("RGB")
+    W, H = 1920, 1100
+    ph = int(H * 1.18)
+    person = im.resize((round(im.width * ph / im.height), ph), Image.LANCZOS)
+    canvas = Image.new("RGB", (W, H))
+    # 배경: 인물 사진 왼쪽 가장자리 세로줄을 가로로 늘림
+    edge = person.crop((0, 0, 6, ph)).resize((W, ph), Image.BILINEAR)
+    canvas.paste(edge.crop((0, 0, W, H)), (0, 0))
+    x = W - person.width - 120
+    canvas.paste(person.crop((0, 0, person.width, H)), (x, 0))
+    # 접합부 부드럽게: 인물 사진 왼쪽 60px에 그라데이션 마스크
+    mask = Image.new("L", (person.width, H), 255)
+    from PIL import ImageDraw
+    d = ImageDraw.Draw(mask)
+    for i in range(80):
+        d.line([(i, 0), (i, H)], fill=int(255 * i / 80))
+    canvas.paste(person.crop((0, 0, person.width, H)), (x, 0), mask)
+    path = os.path.join(OUT, "hero", "director-shin.webp")
+    canvas.save(path, "WEBP", quality=84, method=6)
+    print("hero/director-shin", canvas.size, os.path.getsize(path) // 1024, "KB")
+
+    # 가로형 카드용 크롭 (상반신)
+    save(D("06_원장프로필_진료시간표", "KakaoTalk_20260820_200907542.jpg"), "directors/shin-jaehyeong-wide", 1400, crop=(0, 350, 2400, 2350))
+    save(D("06_원장프로필_진료시간표", "KakaoTalk_20260508_174930797_03.jpg"), "directors/lee-sanghyeon-wide", 1080, crop=(585, 200, 1080, 720), quality=88)
+    save(D("06_원장프로필_진료시간표", "KakaoTalk_20260508_174930797_01.jpg"), "directors/shin-jaehyeong-poster-wide", 1080, crop=(585, 200, 1080, 720), quality=88)
+
+
 if __name__ == "__main__":
     main()
+    hero_composites()

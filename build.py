@@ -92,6 +92,7 @@ def render(template, out_path, **ctx):
     page_path = out_path
     base_ctx = dict(
         site=SITE, nav=NAV, services=SERVICES, conditions=CONDITIONS, columns=COLUMNS, directors=DIRECTORS,
+        directors_by_name={d["name"]: d for d in DIRECTORS},
         root=root, page_path=page_path, jsonld=ctx.pop("jsonld", None) or jsonld(page_path),
     )
     base_ctx.update(ctx)
