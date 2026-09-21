@@ -22,11 +22,14 @@ MODEL = "gemini-3.1-flash-image"
 KEY = os.environ.get("GEMINI_API_KEY")
 
 STYLE = (
-    "Editorial lifestyle photograph for a Korean medicine (한의원) clinic website. "
-    "Korean adult subject, natural realistic skin, soft diffused daylight, calm and trustworthy mood. "
-    "Warm ivory and beige tones with muted sage green accents, shallow depth of field, clean uncluttered background. "
-    "The person shows mild discomfort with a gentle, non-dramatic expression. "
-    "No text, no letters, no logos, no watermarks, no medical gore, no needles. Photorealistic, 4:3 composition."
+    "A real candid photograph, NOT an illustration, NOT CGI, NOT a render. "
+    "Shot on a Sony A7IV with an 85mm f/1.8 lens, ISO 400, natural window light only, slight lens vignetting and film-like grain, "
+    "true-to-life skin texture with pores and subtle imperfections, natural hair strands, realistic fabric wrinkles, "
+    "documentary editorial style like a Korean lifestyle magazine, unretouched, no beauty filter, no smoothing. "
+    "Korean adult subject in an ordinary Korean home or office in Cheongju, everyday clothes. "
+    "Warm neutral color grading, real shadows and highlights, believable clutter in the background. "
+    "The person shows mild, genuine discomfort - not exaggerated. "
+    "No text, no letters, no logos, no watermarks, no medical gore, no needles. 4:3 horizontal."
 )
 
 PROMPTS = {
@@ -51,7 +54,7 @@ PROMPTS = {
 def generate(slug, prompt):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
     body = {
-        "contents": [{"parts": [{"text": STYLE + "\n\nScene: " + prompt}]}],
+        "contents": [{"parts": [{"text": "Photograph brief: " + prompt + "\n\nRendering requirements: " + STYLE}]}],
         "generationConfig": {
             "responseModalities": ["IMAGE"],
             "imageConfig": {"aspectRatio": "4:3", "imageSize": "2K"},
