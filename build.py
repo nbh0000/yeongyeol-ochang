@@ -70,7 +70,7 @@ def jsonld(page_path, extra=None):
         "name": SITE["name"],
         "url": SITE["url"] + "/" + page_path,
         "telephone": "+82-" + SITE["phone"][1:],
-        "image": SITE["url"] + "/images/hero/consult-monitor.webp",
+        "image": SITE["url"] + "/images/hero/director-shin.webp",
         "logo": SITE["url"] + "/images/logo/symbol-green-512.png",
         "address": {"@type": "PostalAddress", "streetAddress": "오창읍 2산단로 132, 301·302호", "addressLocality": "청주시 청원구", "addressRegion": "충청북도", "postalCode": "28116", "addressCountry": "KR"},
         "geo": {"@type": "GeoCoordinates", "latitude": SITE["coords"]["lat"], "longitude": SITE["coords"]["lng"]},
