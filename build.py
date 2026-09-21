@@ -2,10 +2,10 @@
 """
 연결한의원 청주오창 홈페이지 정적 빌드 스크립트
 
-  python build.py             → site/ 폴더에 HTML 생성
-  python tools/build_images.py → assets/ 원본을 site/images/ 로 최적화 (사진 바뀔 때만)
+  python build.py             → docs/ 폴더에 HTML 생성
+  python tools/build_images.py → assets/ 원본을 docs/images/ 로 최적화 (사진 바뀔 때만)
 
-콘텐츠 수정은 src/*.py, 레이아웃 수정은 templates/*.html, 스타일은 site/css/style.css
+콘텐츠 수정은 src/*.py, 레이아웃 수정은 templates/*.html, 스타일은 docs/css/style.css
 """
 import json
 import os
