@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}진료과목 | {{ site.name }}{% endblock %}
+{% block description %}녹용 2배 공진단, 한방 다이어트, 추나·통증치료, 교통사고 후유증, 성장보약, 체질개선, 산후보약 — 연결한의원 청주오창의 진료 안내입니다.{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><span>진료안내</span></nav>
+    <p class="eyebrow">진료 안내</p>
+    <h1>진료과목</h1>
+    <p class="lead">증상 단계와 체질에 맞춰 다르게 처방하는 연결한의원 청주오창의 주요 진료 분야입니다. 각 진료의 대상과 진행 과정, 개인차와 한계를 확인해 보세요.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="grid-3" data-reveal>
+      {% for s in services %}
+      <a class="tile with-image" href="{{ root }}services/{{ s.slug }}.html">
+        <div class="tile-media"><img src="{{ root }}{{ s.image }}" alt="{{ s.image_alt }}" loading="lazy"></div>
+        <div class="tile-body"><h3>{{ s.name }}</h3><p>{{ s.short }}</p><span class="link-arrow">자세히 보기 →</span></div>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="notice" style="margin-top:40px">추나요법·침·약침·부항 등은 건강보험 및 자동차보험(교통사고) 적용 항목이 있으며, 개인의 상태에 따라 진료 내용은 달라질 수 있습니다. 정확한 내용은 내원 상담 시 안내해 드립니다.</div>
+  </div>
+</section>
+<section class="section ivory">
+  <div class="container">
+    <div class="section-head" data-reveal><div><p class="eyebrow">Conditions</p><h2 class="h2">질환별 건강정보</h2></div><a class="link-arrow" href="{{ root }}conditions/index.html">전체 보기 →</a></div>
+    <div class="tag-list" data-reveal>{% for c in conditions %}<a href="{{ root }}conditions/{{ c.slug }}.html">{{ c.name }}</a>{% endfor %}</div>
+  </div>
+</section>
+{% endblock %}

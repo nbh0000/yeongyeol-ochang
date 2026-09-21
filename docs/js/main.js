@@ -1,0 +1,135 @@
+/* 연결한의원 청주오창 — 공통 스크립트 */
+(function () {
+  "use strict";
+
+  // ── 모바일 메뉴 ──────────────────────────────────────────────────────────
+  var toggle = document.querySelector(".menu-toggle");
+  var mobileNav = document.querySelector(".mobile-nav");
+  if (toggle && mobileNav) {
+    toggle.addEventListener("click", function () {
+      var open = mobileNav.classList.toggle("open");
+      toggle.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+
+  // ── 현재 페이지 내비 활성화 ───────────────────────────────────────────────
+  var here = location.pathname.replace(/index\.html$/, "");
+  document.querySelectorAll(".main-nav a").forEach(function (a) {
+    var href = a.getAttribute("href");
+    if (!href) return;
+    var target = new URL(href, location.href).pathname.replace(/index\.html$/, "");
+    if (target !== "/" && here.indexOf(target) === 0) a.classList.add("active");
+  });
+
+  // ── 스크롤 리빌 ─────────────────────────────────────────────────────────
+  var reveals = document.querySelectorAll("[data-reveal]");
+  if (/[?&]capture=1/.test(location.search)) {
+    reveals.forEach(function (el) { el.classList.add("in"); });
+  } else if ("IntersectionObserver" in window && reveals.length) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    reveals.forEach(function (el) { io.observe(el); });
+  } else {
+    reveals.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  // ── 카드 캐러셀 ─────────────────────────────────────────────────────────
+  document.querySelectorAll("[data-carousel]").forEach(function (wrap) {
+    var track = wrap.querySelector(".carousel");
+    var prev = wrap.querySelector("[data-prev]");
+    var next = wrap.querySelector("[data-next]");
+    var dots = wrap.querySelector(".carousel-dots");
+    var status = wrap.querySelector("[data-status]");
+    if (!track) return;
+    var items = Array.prototype.slice.call(track.children);
+
+    function perView() {
+      var first = items[0];
+      if (!first) return 1;
+      var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 0;
+      return Math.max(1, Math.round((track.clientWidth + gap) / (first.getBoundingClientRect().width + gap)));
+    }
+    function pages() { return Math.max(1, Math.ceil(items.length / perView())); }
+    function current() {
+      var first = items[0];
+      var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 0;
+      var w = first.getBoundingClientRect().width + gap;
+      return Math.round(track.scrollLeft / (w * perView()));
+    }
+    function goTo(page) {
+      var first = items[0];
+      var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 0;
+      var w = first.getBoundingClientRect().width + gap;
+      track.scrollTo({ left: page * w * perView(), behavior: "smooth" });
+    }
+    function renderDots() {
+      if (!dots) return;
+      dots.innerHTML = "";
+      var n = pages();
+      for (var i = 0; i < n; i++) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.setAttribute("aria-label", (i + 1) + "페이지로 이동");
+        (function (idx) { b.addEventListener("click", function () { goTo(idx); }); })(i);
+        dots.appendChild(b);
+      }
+      update();
+    }
+    function update() {
+      var c = current(), n = pages();
+      if (dots) Array.prototype.forEach.call(dots.children, function (d, i) { d.classList.toggle("active", i === c); });
+      if (prev) prev.disabled = c <= 0;
+      if (next) next.disabled = c >= n - 1;
+      if (status) status.textContent = (c + 1) + " / " + n + "페이지";
+    }
+    if (prev) prev.addEventListener("click", function () { goTo(Math.max(0, current() - 1)); });
+    if (next) next.addEventListener("click", function () { goTo(Math.min(pages() - 1, current() + 1)); });
+    var t;
+    track.addEventListener("scroll", function () { clearTimeout(t); t = setTimeout(update, 80); });
+    window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(renderDots, 120); });
+    renderDots();
+  });
+
+  // ── 빠른 정보 검색 ───────────────────────────────────────────────────────
+  var searchForm = document.querySelector("[data-search]");
+  if (searchForm && window.SITE_INDEX) {
+    var input = searchForm.querySelector("input");
+    var results = document.querySelector("[data-search-results]");
+    function norm(s) { return (s || "").toLowerCase().replace(/\s+/g, ""); }
+    function run() {
+      var q = norm(input.value);
+      results.innerHTML = "";
+      if (!q || q.length < 1) return;
+      var hits = window.SITE_INDEX.filter(function (it) {
+        return norm(it.title).indexOf(q) > -1 || norm(it.keywords).indexOf(q) > -1;
+      }).slice(0, 8);
+      if (!hits.length) {
+        var p = document.createElement("p"); p.className = "search-empty";
+        p.textContent = "검색 결과가 없습니다. 전화(043-715-3688) 또는 카카오톡으로 문의해 주세요.";
+        results.appendChild(p); return;
+      }
+      hits.forEach(function (h) {
+        var a = document.createElement("a"); a.href = h.url;
+        var s1 = document.createElement("span"); s1.textContent = h.title;
+        var s2 = document.createElement("span"); s2.textContent = h.type;
+        a.appendChild(s1); a.appendChild(s2); results.appendChild(a);
+      });
+    }
+    searchForm.addEventListener("submit", function (e) { e.preventDefault(); run(); });
+    input.addEventListener("input", run);
+  }
+
+  // ── FAQ: 하나 열면 나머지 닫기 (같은 그룹 내) ─────────────────────────────
+  document.querySelectorAll(".faq[data-single]").forEach(function (group) {
+    group.querySelectorAll("details").forEach(function (d) {
+      d.addEventListener("toggle", function () {
+        if (!d.open) return;
+        group.querySelectorAll("details[open]").forEach(function (o) { if (o !== d) o.open = false; });
+      });
+    });
+  });
+})();

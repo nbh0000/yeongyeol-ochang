@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}건강정보 칼럼 | {{ site.name }}{% endblock %}
+{% block description %}연결한의원 청주오창 원장이 직접 작성·검토한 건강정보 칼럼입니다. 통증·체질·소아·교통사고 등 생활 속 건강 관리 정보를 전합니다.{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><span>건강칼럼</span></nav>
+    <p class="eyebrow">Column</p>
+    <h1>건강정보 칼럼</h1>
+    <p class="lead">원장이 직접 작성하고 검토한 건강정보입니다. 일반적인 이해를 돕기 위한 자료이며 개인의 진단이나 치료를 대신하지 않습니다.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="grid-3" data-reveal>
+      {% for c in columns %}
+      <a class="tile with-image" href="{{ root }}column/{{ c.slug }}.html">
+        <div class="tile-media"><img src="{{ root }}{{ c.image }}" alt="" loading="lazy"></div>
+        <div class="tile-body"><span class="small muted">{{ c.date }} · {{ c.category }}</span><h3 style="font-size:17px">{{ c.title }}</h3><p>{{ c.summary }}</p><span class="link-arrow">읽어보기 →</span></div>
+      </a>
+      {% endfor %}
+    </div>
+    <p class="notice" style="margin-top:36px">더 많은 건강정보는 <a href="{{ site.blog }}" target="_blank" rel="noopener" style="color:var(--jade);font-weight:600">네이버 블로그</a>에서도 확인하실 수 있습니다.</p>
+  </div>
+</section>
+{% endblock %}

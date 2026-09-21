@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ site.title }}{% endblock %}</title>
+<meta name="description" content="{% block description %}{{ site.description }}{% endblock %}">
+<meta name="keywords" content="{% block keywords %}{{ site.keywords }}{% endblock %}">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="{{ site.url }}/{{ page_path }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="{{ self.title() }}">
+<meta property="og:description" content="{{ self.description() }}">
+<meta property="og:url" content="{{ site.url }}/{{ page_path }}">
+<meta property="og:image" content="{{ site.url }}/{% block og_image %}images/hero/consult-monitor.webp{% endblock %}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="{{ root }}images/logo/symbol-green-512.png" type="image/png">
+<link rel="apple-touch-icon" href="{{ root }}images/logo/symbol-green-512.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap">
+<link rel="stylesheet" href="{{ root }}css/style.css">
+{% block head %}{% endblock %}
+<script type="application/ld+json">
+{{ jsonld | safe }}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="{{ root }}index.html" aria-label="{{ site.name }} 홈">
+      <img src="{{ root }}images/logo/symbol-green.png" alt="" width="40" height="30">
+      <span>연결한의원</span><span class="brand-branch">청주오창</span>
+    </a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      {% for n in nav %}<a href="{{ root }}{{ n.href }}">{{ n.label }}</a>{% endfor %}
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-outline btn-sm" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
+      <a class="btn btn-brick btn-sm" href="{{ site.kakao }}" target="_blank" rel="noopener">상담문의</a>
+    </div>
+    <button class="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="mobile-nav" aria-label="모바일 메뉴">
+    {% for n in nav %}<a href="{{ root }}{{ n.href }}">{{ n.label }}</a>{% endfor %}
+    <a href="{{ root }}services/index.html">진료과목 전체</a>
+    <a href="{{ root }}location.html">오시는 길</a>
+    <a href="{{ root }}faq.html">자주 묻는 질문</a>
+    <div class="mobile-actions">
+      <a class="btn btn-outline" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
+      <a class="btn btn-brick" href="{{ site.kakao }}" target="_blank" rel="noopener">카카오톡 상담</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<section class="section jadedeep cta">
+  <div class="container">
+    <h2 class="h2">지금 바로 상담받으실 수 있습니다</h2>
+    <div class="btn-group">
+      <a class="btn btn-gold btn-lg" href="tel:{{ site.phone_tel }}">전화 상담·예약</a>
+      <a class="btn btn-kakao btn-lg" href="{{ site.kakao }}" target="_blank" rel="noopener">카카오톡 상담</a>
+      <a class="btn btn-outline-light btn-lg" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><img src="{{ root }}images/logo/logo-gold.png" alt="연결한의원"><span class="sr-only">연결한의원 청주오창</span></div>
+        <p>{{ site.address }}</p>
+        <p style="margin-top:6px"><a href="tel:{{ site.phone_tel }}">대표전화 {{ site.phone }}</a></p>
+        <p class="small" style="margin-top:10px;color:rgba(255,255,255,.45)">{{ site.landmark }}</p>
+      </div>
+      <div>
+        <div class="footer-title">진료시간</div>
+        <ul class="footer-hours">
+          {% for h in site.hours %}<li><span>{{ h.label }}</span><span>{{ h.time }}<span class="sub">{{ h.sub }}</span></span></li>{% endfor %}
+        </ul>
+        <p class="small" style="color:var(--goldsoft);margin-top:8px">{{ site.hours_note }}</p>
+      </div>
+      <div>
+        <div class="footer-title">주요 진료</div>
+        <ul>
+          {% for s in services %}<li><a href="{{ root }}services/{{ s.slug }}.html">{{ s.name }}</a></li>{% endfor %}
+        </ul>
+      </div>
+      <div>
+        <div class="footer-title">채널</div>
+        <ul>
+          <li><a href="{{ site.naver_place }}" target="_blank" rel="noopener">네이버 플레이스 · 길찾기</a></li>
+          <li><a href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a></li>
+          <li><a href="{{ site.kakao }}" target="_blank" rel="noopener">카카오톡 채널</a></li>
+          <li><a href="{{ site.blog }}" target="_blank" rel="noopener">네이버 블로그</a></li>
+          <li><a href="{{ site.network }}" target="_blank" rel="noopener">연결한의원 전국 지점 안내</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <nav>
+        <a href="{{ root }}services/index.html">진료과목</a>
+        <a href="{{ root }}about.html">한의원 소개</a>
+        <a href="{{ root }}faq.html">FAQ</a>
+        <a href="{{ root }}conditions/index.html">질환정보</a>
+        <a href="{{ root }}column/index.html">건강칼럼</a>
+        <a href="{{ root }}philosophy.html">진료철학</a>
+        <a href="{{ root }}location.html">오시는 길</a>
+        <a href="{{ root }}privacy-policy.html">개인정보처리방침</a>
+      </nav>
+      <p>© 2026 연결한의원 청주오창. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<nav class="quick-bar" aria-label="빠른 상담">
+  <a href="tel:{{ site.phone_tel }}">전화</a>
+  <a class="k" href="{{ site.kakao }}" target="_blank" rel="noopener">카톡 상담</a>
+  <a class="n" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
+</nav>
+
+<script src="{{ root }}js/main.js" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

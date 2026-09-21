@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}진료철학 | {{ site.name }}{% endblock %}
+{% block description %}반응을 예측하고, 확인하고, 다시 보정합니다. 연결한의원 청주오창이 진료실에서 지키는 9가지 진료 원칙입니다.{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><span>진료철학</span></nav>
+    <div class="hero-split">
+      <div>
+        <p class="eyebrow">Clinical philosophy</p>
+        <h1>반응을 예측하고, 확인하고, 다시 보정합니다</h1>
+        <p class="lead">‘맞춤 진료’라는 말이 실제로 무엇을 뜻하는지, 진료실에서 확인할 수 있는 기준으로 정리했습니다.</p>
+      </div>
+      <img src="{{ root }}images/clinic/corridor-posters.webp" alt="연결한의원 청주오창 진료 안내 복도">
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container prose">
+    <div class="answer-box" style="margin-top:0">
+      <div class="label">먼저 답부터</div>
+      <p>연결한의원의 핵심 진료철학은 같은 진단명에 같은 치료를 반복하는 것이 아니라, 병의 상태와 환자의 회복력을 보고 치료 위치·강도·예상 반응을 정한 뒤 실제 반응으로 계속 보정하는 것입니다. 몸의 안팎과 구조 사이의 연결을 살피고, 치료 전 설명과 치료 후 확인까지 하나의 진료 과정으로 봅니다.</p>
+      <p class="meta">작성·검토: 김현교 대표원장 · 최근 정리 2026-09</p>
+    </div>
+    <h2>연결한의원을 구분해 주는 9가지 진료 원칙</h2>
+    {% for p in principles %}
+    <div class="principle" data-reveal>
+      <div class="n">원칙 {{ loop.index }}</div>
+      <div><h3>{{ p[0] }}</h3><p>{{ p[1] }}</p></div>
+    </div>
+    {% endfor %}
+    <h2>진료실에서 환자가 확인할 질문</h2>
+    <ul>{% for q in patient_questions %}<li>{{ q }}</li>{% endfor %}</ul>
+    <blockquote>연결한의원은 증상만 보지 않습니다.<br>증상 뒤에 숨은 원인을, 오늘의 몸과 회복된 내일을 잇는 것 — 저희가 ‘연결’이라는 이름을 쓰는 이유입니다.</blockquote>
+    <div class="btn-group">
+      <a class="btn btn-brick" href="{{ root }}about.html">원장 소개 보기</a>
+      <a class="btn btn-outline" href="{{ root }}services/index.html">진료과목 보기</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}질환·증상 건강정보 | {{ site.name }}{% endblock %}
+{% block description %}허리디스크, 목디스크, 오십견, 척추관협착증, 테니스엘보, 교통사고 후유증, 만성두통, 역류성식도염, 갱년기, 불면증, 비염 등 원장이 검토한 질환별 건강정보입니다.{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><span>질환·증상 건강정보</span></nav>
+    <p class="eyebrow">Conditions</p>
+    <h1>질환·증상 건강정보</h1>
+    <p class="lead">검색어를 진단명으로 단정하지 않습니다. 생활 속에서 시작되는 장면, 비슷한 증상과의 구분, 진료 전 메모할 것, 지체하지 말아야 하는 신호까지 원장이 직접 검토해 정리했습니다.</p>
+  </div>
+</section>
+{% for cat in categories %}
+<section class="section {% if loop.index0 % 2 %}ivory{% endif %}">
+  <div class="container">
+    <div class="section-head" data-reveal><div><p class="eyebrow">{{ cat }}</p><h2 class="h2">{{ cat }} 질환</h2></div></div>
+    <div class="grid-3" data-reveal>
+      {% for c in conditions if c.category == cat %}
+      <a class="tile with-image" href="{{ root }}conditions/{{ c.slug }}.html">
+        <div class="tile-media"><img src="{{ root }}{{ c.image }}" alt="{{ c.name }}" loading="lazy"></div>
+        <div class="tile-body"><h3>{{ c.name }}</h3><p>{{ c.lead[:90] }}…</p><span class="link-arrow">자세히 보기 →</span></div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}원장 소개 · 한의원 소개 | {{ site.name }}{% endblock %}
+{% block description %}연결한의원 청주오창 김현교 대표원장, 신재형 원장, 이상현 원장의 이력과 진료 분야, 원장별 진료 요일, 1인 치료실 원내 안내입니다.{% endblock %}
+{% block og_image %}images/directors/kim-hyeongyo.webp{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><span>원장 소개</span></nav>
+    <p class="eyebrow">원장 소개</p>
+    <h1>연결한의원 청주오창 원장진</h1>
+    <p class="lead">세 원장이 요일별로 협진하며 365일 진료합니다. 원장마다 주요 진료 분야가 달라, 예약 시 증상에 맞는 원장을 안내해 드립니다.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    {% for d in directors %}
+    <div class="director" id="{{ d.slug }}" data-reveal>
+      <div class="director-photo"><img src="{{ root }}{{ d.photo }}" alt="{{ d.name }} {{ d.role }}" style="object-position:{{ d.photo_pos }}"></div>
+      <div>
+        <p class="eyebrow" style="margin-bottom:6px">믿음과 신뢰를 주는</p>
+        <h2>{{ d.name }}<small>{{ d.role }}</small></h2>
+        <p class="role">주요 진료: {{ d.specialty | join(', ') }}</p>
+        <p style="margin-bottom:18px;color:#3a3935">{{ d.intro }}</p>
+        <h3 class="h3" style="font-size:15px;margin-bottom:10px">이력</h3>
+        <ul>{% for c in d.career %}<li>{{ c }}</li>{% endfor %}</ul>
+        <div class="schedule">
+          <h3 class="h3" style="font-size:15px;margin-bottom:8px">진료 시간 <span class="small muted" style="font-weight:400">동그라미 표시가 있는 날은 진료가 있습니다</span></h3>
+          <table>
+            <thead><tr>{% for day in days %}<th>{{ day }}</th>{% endfor %}</tr></thead>
+            <tbody><tr>{% for day in days %}{% set v = d.schedule[day] %}<td class="{% if v == 'O' %}on{% endif %}">{% if v == 'O' %}○{% elif v %}<small>{{ v }}</small>{% endif %}</td>{% endfor %}</tr></tbody>
+          </table>
+          <p class="cap">진료 요일은 사정에 따라 변경될 수 있으니 예약 시 확인해 주세요.</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section ivory" id="clinic">
+  <div class="container">
+    <div class="section-head" data-reveal><div><p class="eyebrow">Clinic</p><h2 class="h2">모든 치료실이 1인실인 원내 공간</h2></div></div>
+    <div class="gallery" data-reveal>
+      <figure><img src="{{ root }}images/clinic/entrance-sign.webp" alt="입구" loading="lazy"><figcaption>연결한의원 청주오창 입구 (부민빌딩 3층)</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/reception-1.webp" alt="접수 데스크" loading="lazy"><figcaption>접수 데스크</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/waiting-3.webp" alt="대기 공간" loading="lazy"><figcaption>대기 공간</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/corridor-posters.webp" alt="복도" loading="lazy"><figcaption>진료 안내 복도</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/treatment-room-1.webp" alt="1인 치료실" loading="lazy"><figcaption>프라이빗 1인 치료실</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/treatment-room-3.webp" alt="1인 치료실" loading="lazy"><figcaption>1인 치료실</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/consult-room-1.webp" alt="진료실" loading="lazy"><figcaption>원장 진료실</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/consult-room-2.webp" alt="진료실" loading="lazy"><figcaption>추나 치료 베드</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/hydro-bed.webp" alt="수치료기" loading="lazy"><figcaption>수치료기 라운지</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/lounge-1.webp" alt="라운지" loading="lazy"><figcaption>라운지</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/corridor-1.webp" alt="복도" loading="lazy"><figcaption>치료실 복도</figcaption></figure>
+      <figure><img src="{{ root }}images/clinic/waiting-2.webp" alt="대기 공간" loading="lazy"><figcaption>대기 공간</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container prose" data-reveal>
+    <p class="eyebrow">Our principles</p>
+    <h2 style="margin-top:0">한 번의 치료도 대충 하지 않는다는 원칙</h2>
+    <p>침은 같은 이름의 치료라도 놓는 지점과 깊이, 강도에 따라 환자가 느끼는 반응이 달라질 수 있습니다. 연결한의원은 침이 처음인 아이에게도 부담이 적은 자극부터, 만성화된 상태에 필요한 자극까지 조절할 수 있어야 한다고 봅니다. ‘꼭 필요한 아픔’이 아니라면 통증을 줄이고, 왜 이 강도를 선택했는지와 치료 뒤 어떤 반응을 확인할지를 먼저 설명합니다.</p>
+    <h2>병의 상태와 사람의 회복력을 함께 봅니다</h2>
+    <p>같은 목디스크나 허리통증이라도 병의 깊이, 체격, 수면과 회복력, 이전 치료 반응은 서로 다릅니다. 가장 약한 치료나 가장 강한 치료를 일률적으로 적용하지 않고, 다음 내원에서 실제로 뻐근함이 얼마나 갔는지와 기능이 어떻게 달라졌는지를 확인해 치료점을 다시 보정합니다. 한약도 몸의 변화에 맞춰 15일마다 재상담한 뒤 다음 처방을 결정합니다.</p>
+    <h2>몸의 안팎과 구조 사이의 연결을 찾습니다</h2>
+    <p>아픈 부위만 ‘피해자’처럼 반복해 치료하지 않고, 그 부위에 부담을 만드는 주변 구조와 몸 안의 상태를 함께 살핍니다. 문진·맥진·복진과 필요한 신체 진찰을 종합해 치료할 지점과 방법을 고르고, 비슷한 치료관을 가진 원장들이 사례와 반응을 공유하며 판단을 계속 점검합니다.</p>
+    <h2>원장들도 매일 직접 침·한약·추나를 받아봅니다</h2>
+    <p>연결한의원 원장들은 서로에게 침을 맞고 한약을 복용하며 추나 치료를 받아봅니다. 환자가 어떤 자극을 어떻게 느끼는지 직접 확인하고, 어떤 치료를 어느 정도 강도로 했을 때 경과가 어떻게 달라지는지 더 세밀하게 확인하기 위해서입니다. 자극 위치가 조금만 달라져도 치료 효과가 달라진다는 점을 스스로 겪으며, 근육·인대·힘줄마다, 사람마다·연령마다 필요한 자극을 매일 연구합니다.</p>
+    <h2>모든 치료실은 1인실입니다</h2>
+    <p>침·약침·추나·상담이 이루어지는 모든 치료실을 1인실로 운영합니다. 다른 환자와 마주치지 않는 공간에서 증상과 치료 중 반응을 편하게 말씀해 주실 수 있습니다.</p>
+    <p><a class="link-arrow" href="{{ root }}philosophy.html">치료 강도·회복력·설명·사례 공유를 포함한 9가지 진료 원칙 보기 →</a></p>
+
+    <h2>연결한의원 네트워크</h2>
+    <p>연결한의원은 청주오창 외에도 아산탕정점, 파주운정점, 서초사당점까지 전국 네트워크로 운영되고 있습니다. 비슷한 치료관을 가진 원장들이 치료 사례와 반응을 정기적으로 공유합니다.</p>
+    <p><a class="link-arrow" href="{{ site.network }}" target="_blank" rel="noopener">전국 지점 통합 안내 사이트 보기 →</a></p>
+    <div class="notice">이 페이지는 한의원에서 공개 확인한 진료 분야와 공식 채널만 기재합니다. 의료 콘텐츠는 원장이 직접 작성·검토하며, 과장된 경력이나 확인되지 않은 수식어를 사용하지 않습니다.</div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-media">
+    <img src="{{ site.hero_image }}" alt="연결한의원 청주오창 진료실에서 상담 중인 김현교 대표원장" fetchpriority="high">
+  </div>
+  <div class="container">
+    <p class="hero-eyebrow">청주오창 · 연결한의원</p>
+    <p class="hero-sub">청주·오창·청원 한의원</p>
+    <h1>증상 단계와 체질에 맞춰,<br>다르게 처방합니다</h1>
+    <div class="hero-chips">
+      <a href="services/gongjindan.html">녹용 2배 공진단</a>
+      <a href="services/diet.html">한방 다이어트</a>
+      <a href="services/chuna.html">추나·통증치료</a>
+      <a href="services/accident.html">교통사고 후유증</a>
+    </div>
+    <div class="btn-group">
+      <a class="btn btn-brick btn-lg" href="{{ site.kakao }}" target="_blank" rel="noopener">상담문의</a>
+      <a class="btn btn-outline-light btn-lg" href="location.html">오시는 길</a>
+    </div>
+  </div>
+  <a class="hero-scroll" href="#featured" aria-label="아래로 이동">↓</a>
+</section>
+
+<!-- 주요 진료 캐러셀 -->
+<section class="section" id="featured">
+  <div class="container" data-carousel>
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Featured</p>
+        <h2 class="h2">연결한의원의 주요 진료를 확인해 보세요</h2>
+      </div>
+      <div class="carousel-nav">
+        <button type="button" data-prev aria-label="이전">←</button>
+        <button type="button" data-next aria-label="다음">→</button>
+      </div>
+    </div>
+    <p class="sr-only" data-status aria-live="polite"></p>
+    <ul class="carousel">
+      {% for f in featured %}
+      <li>
+        <a class="card" href="{{ f.href }}">
+          <div class="card-media">
+            <img src="{{ f.image }}" alt="{{ f.title }}" loading="lazy">
+            <span class="card-badge">연결한의원 청주오창</span>
+            <span class="card-caption">{{ f.caption }}</span>
+          </div>
+          <div class="card-body">
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.desc }}</p>
+            <span class="link-arrow">{{ f.label }} 자세히 보기 →</span>
+          </div>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="carousel-dots"></div>
+  </div>
+</section>
+
+<!-- 해시태그 티커 -->
+<section class="ticker" aria-label="주요 진료 키워드">
+  <div class="ticker-row">
+    {% for t in ticker1 %}<a href="{{ ticker_links[t] }}">#{{ t }}</a>{% endfor %}
+    {% for t in ticker1 %}<a href="{{ ticker_links[t] }}" aria-hidden="true" tabindex="-1">#{{ t }}</a>{% endfor %}
+  </div>
+  <div class="ticker-row reverse">
+    {% for t in ticker2 %}<a href="{{ ticker_links[t] }}">#{{ t }}</a>{% endfor %}
+    {% for t in ticker2 %}<a href="{{ ticker_links[t] }}" aria-hidden="true" tabindex="-1">#{{ t }}</a>{% endfor %}
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="container">
+    <p class="intro-text" data-reveal>연결한의원 청주오창은 오창읍·오창과학산업단지 생활권은 물론 청주 시내와 오송·증평·진천에서도 찾아주시는 한의원입니다. 증상 단계와 체질에 맞춰 추나·약침·한약 치료를 진행하며, 365일 평일 야간까지 진료합니다.</p>
+  </div>
+</section>
+
+<!-- 숫자 밴드 -->
+<section class="section jadedeep">
+  <div class="container" data-reveal>
+    <p class="eyebrow gold">Clinic at a glance</p>
+    <h2 class="h2">필요한 때 찾아올 수 있는 연결한의원 청주오창</h2>
+    <div class="stats">
+      {% for s in stats %}
+      <div class="stat">
+        <div class="num">{{ s.num }}</div>
+        <div class="label">{{ s.label }}</div>
+        <div class="sub">{{ s.sub }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="stats-note">진료시간: 평일 09:30–20:00 (점심 13:00–14:00) · 토·일·공휴일 09:30–15:00 · 원장별 진료 요일은 원장 소개에서 확인하세요</p>
+  </div>
+</section>
+
+<!-- 핵심 진료 -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Core services</p>
+        <h2 class="h2">핵심 진료 분야</h2>
+      </div>
+      <a class="link-arrow" href="services/index.html">진료과목 전체 보기 →</a>
+    </div>
+    <div class="grid-3" data-reveal>
+      {% for c in core %}
+      <a class="tile" href="{{ c.href }}">
+        <h3>{{ c.title }}</h3>
+        <p>{{ c.desc }}</p>
+        <span class="link-arrow">자세히 보기 →</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section ivory" id="about">
+  <div class="container about-band" data-reveal>
+    <div class="about-photos">
+      <img class="tall" src="images/clinic/entrance-sign.webp" alt="연결한의원 청주오창 입구" loading="lazy">
+      <img class="wide" src="images/hero/consult-monitor-2.webp" alt="김현교 대표원장 진료 상담" loading="lazy">
+    </div>
+    <div>
+      <p class="eyebrow">About</p>
+      <h2 class="h2">연결한의원 청주오창</h2>
+      <p class="lead" style="margin-top:12px">{{ site.address }}</p>
+      <p class="small muted">{{ site.landmark }}</p>
+      <ul class="info-list">
+        {% for h in site.hours %}<li><span>{{ h.label }}</span><b>{{ h.time }}<span class="sub">{{ h.sub }}</span></b></li>{% endfor %}
+        <li><span>대표전화</span><b><a href="tel:{{ site.phone_tel }}">{{ site.phone }}</a></b></li>
+      </ul>
+      <div class="btn-group">
+        <a class="btn btn-brick" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
+        <a class="btn btn-outline" href="{{ site.naver_place }}" target="_blank" rel="noopener">네이버 리뷰 보기</a>
+        <a class="btn btn-outline" href="location.html">오시는 길·주차 안내</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 이런 분들 -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Who we see</p>
+        <h2 class="h2">이런 분들이 찾으십니다</h2>
+      </div>
+    </div>
+    <div class="grid-3" data-reveal>
+      {% for w in who %}<a class="pill-tile" href="{{ w.href }}">{{ w.text }}</a>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="section white">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Why Yeongyeol</p>
+        <h2 class="h2">연결한의원을 비교할 실제 이유</h2>
+      </div>
+    </div>
+    <div class="why-list" data-reveal>
+      {% for w in why %}
+      <div class="why-item">
+        <h3>{{ w.title }}</h3>
+        <p>{{ w.text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <p style="margin-top:36px" data-reveal><a class="link-arrow" href="philosophy.html">연결한의원의 9가지 진료 원칙 보기 →</a></p>
+  </div>
+</section>
+
+<!-- 원내 갤러리 -->
+<section class="section ivory" id="clinic">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Clinic</p>
+        <h2 class="h2">편안하게 진료받는 원내 공간</h2>
+      </div>
+      <a class="link-arrow" href="about.html#clinic">원내 안내 더 보기 →</a>
+    </div>
+    <div class="gallery" data-reveal>
+      <figure><img src="images/clinic/treatment-room-1.webp" alt="1인 치료실" loading="lazy"><figcaption>프라이빗 1인 치료실</figcaption></figure>
+      <figure><img src="images/clinic/consult-room-1.webp" alt="진료실" loading="lazy"><figcaption>원장 진료실</figcaption></figure>
+      <figure><img src="images/clinic/hydro-bed.webp" alt="수치료기 라운지" loading="lazy"><figcaption>수치료기 라운지</figcaption></figure>
+      <figure><img src="images/clinic/waiting-3.webp" alt="대기 공간" loading="lazy"><figcaption>대기 공간</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- 칼럼 -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">Column</p>
+        <h2 class="h2">최신 건강정보 칼럼</h2>
+      </div>
+      <a class="link-arrow" href="column/index.html">전체 칼럼 보기 →</a>
+    </div>
+    <div class="grid-3" data-reveal>
+      {% for c in columns[:3] %}
+      <a class="column-card" href="column/{{ c.slug }}.html">
+        <span class="date">{{ c.date }} · {{ c.category }}</span>
+        <h3>{{ c.title }}</h3>
+        <p>{{ c.summary }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 지역 -->
+<section class="section ivory tight">
+  <div class="container" data-reveal>
+    <p class="eyebrow">Area</p>
+    <h2 class="h2" style="margin-bottom:18px">이런 지역에서 내원하십니다</h2>
+    <p class="area-links">{% for a in site.areas %}<a href="location.html">{{ a }}</a>{% if not loop.last %}·&nbsp;{% endif %}{% endfor %}</p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div>
+        <p class="eyebrow">FAQ</p>
+        <h2 class="h2">오창한의원, 무엇이 궁금하신가요?</h2>
+      </div>
+      <a class="link-arrow" href="faq.html">자주 묻는 질문 전체 →</a>
+    </div>
+    <div class="faq" data-single data-reveal>
+      {% for f in home_faq %}
+      <details><summary>{{ f.q }}</summary><div class="answer"><p>{{ f.a }}</p></div></details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 빠른 정보 찾기 -->
+<section class="section ivory tight">
+  <div class="container" data-reveal>
+    <p class="eyebrow">빠른 정보 찾기</p>
+    <h2 class="h2">어떤 진료정보를 찾고 계신가요?</h2>
+    <form class="search-box" data-search role="search">
+      <label class="sr-only" for="q">진료정보 검색어</label>
+      <input id="q" type="search" placeholder="예: 허리디스크, 추나요법, 다이어트, 주차" autocomplete="off">
+      <button class="btn btn-jade" type="submit">검색</button>
+      <a class="btn btn-outline" href="location.html">예약 방법·진료시간 확인</a>
+    </form>
+    <div class="search-results" data-search-results></div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>window.SITE_INDEX = {{ search_index | safe }};</script>
+{% endblock %}
