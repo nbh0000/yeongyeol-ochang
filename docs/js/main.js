@@ -109,7 +109,7 @@
       }).slice(0, 8);
       if (!hits.length) {
         var p = document.createElement("p"); p.className = "search-empty";
-        p.textContent = "검색 결과가 없습니다. 전화(043-715-3688) 또는 카카오톡으로 문의해 주세요.";
+        p.textContent = "검색 결과가 없습니다. 전화(043-715-3688)로 문의해 주세요.";
         results.appendChild(p); return;
       }
       hits.forEach(function (h) {

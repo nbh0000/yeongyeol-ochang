@@ -143,7 +143,7 @@ def jsonld(page_path, extra=None):
             {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday", "Sunday", "PublicHolidays"], "opens": "09:30", "closes": "15:00"},
         ],
         "medicalSpecialty": "한의학",
-        "sameAs": [SITE["naver_place_full"], SITE["kakao"], SITE["blog"]],
+        "sameAs": [SITE["naver_place_full"], SITE["blog"]],
     }
     return json.dumps([data, extra] if extra else data, ensure_ascii=False, indent=1)
 

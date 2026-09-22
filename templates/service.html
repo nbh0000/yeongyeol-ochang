@@ -15,7 +15,6 @@
         <div class="btn-group" style="margin-top:26px">
           <a class="btn btn-brick" href="tel:{{ site.phone_tel }}">전화 상담·예약 {{ site.phone }}</a>
           <a class="btn btn-outline" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버로 예약하기</a>
-          <a class="btn btn-outline" href="{{ site.kakao }}" target="_blank" rel="noopener">카카오톡 상담</a>
         </div>
       </div>
       <img src="{{ root }}{{ s.image }}" alt="{{ s.image_alt }}">
@@ -92,7 +91,6 @@
           {% for h in site.hours %}<li><span>{{ h.label }}</span><b>{{ h.time }}<span class="sub">{{ h.sub }}</span></b></li>{% endfor %}
         </ul>
         <a class="btn btn-brick" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
-        <a class="btn btn-kakao" href="{{ site.kakao }}" target="_blank" rel="noopener">카카오톡 상담</a>
       </div>
       <div class="side-card">
         <h4>다른 진료 안내</h4>
