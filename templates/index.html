@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <!-- 히어로 -->
-<section class="hero">
+<section class="hero hero-light">
   <div class="hero-media">
-    <img src="{{ site.hero_image }}" alt="연결한의원 청주오창 신재형 원장" fetchpriority="high">
+    <img src="{{ site.hero_image }}" alt="연결한의원 청주오창 신재형·김현교·이상현 원장" fetchpriority="high">
   </div>
   <div class="container">
     <p class="hero-eyebrow">청주오창 · 연결한의원</p>
-    <p class="hero-sub">청주·오창·청원 한의원</p>
+    <p class="hero-sub">청주·오창 한의원</p>
     <h1>증상 단계와 체질에 맞춰,<br>다르게 처방합니다</h1>
+    <p class="hero-desc">한의사 원장 3인이 요일별로 협진하며 365일, 평일 저녁 8시까지 진료합니다.</p>
     <div class="hero-chips">
       <a href="services/gongjindan.html">녹용 2배 공진단</a>
       <a href="services/diet.html">한방 다이어트</a>
@@ -16,11 +17,29 @@
       <a href="services/accident.html">교통사고 후유증</a>
     </div>
     <div class="btn-group">
-      <a class="btn btn-brick btn-lg" href="{{ site.kakao }}" target="_blank" rel="noopener">상담문의</a>
-      <a class="btn btn-outline-light btn-lg" href="location.html">오시는 길</a>
+      <a class="btn btn-brick btn-lg" href="{{ site.naver_booking }}" target="_blank" rel="noopener">상담문의</a>
+      <a class="btn btn-outline btn-lg" href="location.html">오시는 길</a>
     </div>
   </div>
-  <a class="hero-scroll" href="#featured" aria-label="아래로 이동">↓</a>
+</section>
+
+<!-- 질환·증상 검색 -->
+<section class="hero-search-band">
+  <div class="container">
+    <form class="hero-search" data-search role="search">
+      <label class="sr-only" for="q">질환·증상 검색</label>
+      <div class="hero-search-field">
+        <span class="hero-search-icon" aria-hidden="true">⌕</span>
+        <input id="q" type="search" placeholder="어떤 증상이 궁금하신가요? (예: 허리디스크, 손저림, 두통)" autocomplete="off">
+      </div>
+      <button class="btn btn-jade" type="submit">검색</button>
+    </form>
+    <div class="hero-search-hint">
+      <span>많이 찾는 검색어</span>
+      {% for t in ticker1[:5] %}<a href="{{ ticker_links[t] }}">{{ t }}</a>{% endfor %}
+    </div>
+    <div class="search-results" data-search-results></div>
+  </div>
 </section>
 
 <!-- 주요 진료 캐러셀 -->
@@ -263,20 +282,7 @@
   </div>
 </section>
 
-<!-- 빠른 정보 찾기 -->
-<section class="section ivory tight">
-  <div class="container" data-reveal>
-    <p class="eyebrow">빠른 정보 찾기</p>
-    <h2 class="h2">어떤 진료정보를 찾고 계신가요?</h2>
-    <form class="search-box" data-search role="search">
-      <label class="sr-only" for="q">진료정보 검색어</label>
-      <input id="q" type="search" placeholder="예: 허리디스크, 추나요법, 다이어트, 주차" autocomplete="off">
-      <button class="btn btn-jade" type="submit">검색</button>
-      <a class="btn btn-outline" href="location.html">예약 방법·진료시간 확인</a>
-    </form>
-    <div class="search-results" data-search-results></div>
-  </div>
-</section>
+
 {% endblock %}
 
 {% block scripts %}

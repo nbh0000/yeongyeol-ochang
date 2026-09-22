@@ -7,8 +7,8 @@ SITE = {
     "branch": "청주오창",
     "branch_en": "CHEONGJU · OCHANG",
     "url": "https://www.yeongyeolochang.co.kr",
-    "title": "연결한의원 청주오창 | 청주·오창·청원 한의원",
-    "description": "연결한의원 청주오창은 청주·오창·청원 생활권에서 증상 단계와 체질에 맞춰 추나·약침·한약 치료를 진행하는 365일 진료 한의원입니다. 평일 야간진료, 모든 치료실 1인실 운영.",
+    "title": "연결한의원 청주오창 | 청주·오창 한의원",
+    "description": "연결한의원 청주오창은 청주·오창 생활권에서 증상 단계와 체질에 맞춰 추나·약침·한약 치료를 진행하는 365일 진료 한의원입니다. 평일 야간진료, 모든 치료실 1인실 운영.",
     "keywords": "오창한의원,청주한의원,청원구한의원,오창읍 한의원,오창 한의원 추천,청주 한의원 추천,오창 추나요법,오창 교통사고 한의원,오창 공진단,청주 한방다이어트,오창 야간진료 한의원,365일 한의원",
     "address": "충북 청주시 청원구 오창읍 2산단로 132, 301·302호 (3층)",
     "address_short": "충북 청주시 청원구 오창읍 2산단로 132, 3층",
@@ -23,7 +23,7 @@ SITE = {
     "hours_note": "평일 매일 야간진료 · 365일 진료",
     "naver_place": "https://naver.me/x3HRxoCc",
     "naver_place_full": "https://map.naver.com/p/entry/place/2064329881",
-    "naver_booking": "https://m.booking.naver.com/booking/13/bizes/1554365?theme=place&entry=pll&lang=ko&area=pll",
+    "naver_booking": "https://m.booking.naver.com/booking/13/bizes/1554365?theme=place&entry=pll&lang=ko",
     "kakao": "https://pf.kakao.com/_Xkzxgn",
     "kakao_name": "연결한의원-청주오창",
     "blog": "https://blog.naver.com/gogeum811",
@@ -31,7 +31,7 @@ SITE = {
     "coords": {"lat": 36.7330392, "lng": 127.4507672},
     "areas": ["오창", "오창읍", "오창과학산업단지", "주성리", "각리", "양청리", "송대리", "청주", "청원구",
               "율량동", "주중동", "내수", "옥산", "오송", "북이", "증평", "진천", "진천 혁신도시", "음성", "대소", "금왕"],
-    "hero_image": "images/hero/director-shin.webp",
+    "hero_image": "images/hero/directors-team.webp",
 }
 
 NAV = [
@@ -39,6 +39,7 @@ NAV = [
     {"label": "다이어트", "href": "services/diet.html"},
     {"label": "추나·통증질환", "href": "services/chuna.html"},
     {"label": "질환별 치료", "href": "conditions/index.html"},
+    {"label": "건강정보", "href": "column/index.html"},
     {"label": "원장소개", "href": "about.html"},
 ]
 
@@ -166,12 +167,12 @@ CORE = [
 
 # ── 홈: 이런 분들이 찾으십니다 ─────────────────────────────────────────────
 WHO = [
-    {"text": "교통사고 후 통증이 계속되는 분", "href": "conditions/traffic-accident.html"},
+    {"text": "교통사고 후 통증이 계속되는 분", "href": "conditions/%EA%B5%90%ED%86%B5%EC%82%AC%EA%B3%A0-%ED%95%9C%EC%9D%98%EC%9B%90.html"},
     {"text": "다이어트 정체기로 고민인 분", "href": "services/diet.html"},
-    {"text": "테니스엘보가 자꾸 재발하는 분", "href": "conditions/tennis-elbow.html"},
-    {"text": "목·허리디스크로 팔·다리가 저린 분", "href": "conditions/lumbar-disc.html"},
-    {"text": "오십견으로 팔이 잘 안 올라가는 분", "href": "conditions/frozen-shoulder.html"},
-    {"text": "족저근막염으로 아침 첫걸음이 아픈 분", "href": "conditions/plantar-fasciitis.html"},
+    {"text": "테니스엘보가 자꾸 재발하는 분", "href": "conditions/%ED%85%8C%EB%8B%88%EC%8A%A4%EC%97%98%EB%B3%B4.html"},
+    {"text": "목·허리디스크로 팔·다리가 저린 분", "href": "conditions/%ED%97%88%EB%A6%AC%EB%94%94%EC%8A%A4%ED%81%AC.html"},
+    {"text": "오십견으로 팔이 잘 안 올라가는 분", "href": "conditions/%EC%98%A4%EC%8B%AD%EA%B2%AC.html"},
+    {"text": "족저근막염으로 아침 첫걸음이 아픈 분", "href": "conditions/%EC%A1%B1%EC%A0%80%EA%B7%BC%EB%A7%89%EC%97%BC.html"},
 ]
 
 # ── 홈: WHY ───────────────────────────────────────────────────────────────

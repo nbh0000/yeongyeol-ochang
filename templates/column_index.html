@@ -1,26 +1,52 @@
 {% extends "base.html" %}
-{% block title %}건강정보 칼럼 | {{ site.name }}{% endblock %}
-{% block description %}연결한의원 청주오창 원장이 직접 작성·검토한 건강정보 칼럼입니다. 통증·체질·소아·교통사고 등 생활 속 건강 관리 정보를 전합니다.{% endblock %}
+{% block title %}건강정보 | {{ site.name }}{% endblock %}
+{% block description %}연결한의원 청주오창이 정리한 건강정보 {{ columns|length }}편. 통증·두통·소화기·여성·수면·교통사고 등 증상별로 진료실에서 자주 나오는 질문과 자가관리 경계선을 안내합니다.{% endblock %}
 {% block content %}
 <section class="page-hero">
   <div class="container">
-    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><span>건강칼럼</span></nav>
-    <p class="eyebrow">Column</p>
-    <h1>건강정보 칼럼</h1>
-    <p class="lead">원장이 직접 작성하고 검토한 건강정보입니다. 일반적인 이해를 돕기 위한 자료이며 개인의 진단이나 치료를 대신하지 않습니다.</p>
+    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><span>건강정보</span></nav>
+    <p class="eyebrow">Health guide</p>
+    <h1>건강정보</h1>
+    <p class="lead">증상이 시작되는 생활 속 장면부터 자가관리로 되는 것과 안 되는 것, 진료 전에 메모하면 좋은 내용까지 정리했습니다. 현재 <b>{{ columns|length }}편</b>의 건강정보를 제공하고 있습니다.</p>
+    <form class="hero-search" data-search role="search" style="margin-top:22px;max-width:640px">
+      <label class="sr-only" for="q">건강정보 검색</label>
+      <div class="hero-search-field">
+        <span class="hero-search-icon" aria-hidden="true">⌕</span>
+        <input id="q" type="search" placeholder="궁금한 증상을 검색해 보세요" autocomplete="off">
+      </div>
+      <button class="btn btn-jade" type="submit">검색</button>
+    </form>
+    <div class="search-results" data-search-results></div>
   </div>
 </section>
+
 <section class="section">
   <div class="container">
-    <div class="grid-3" data-reveal>
-      {% for c in columns %}
-      <a class="tile with-image" href="{{ root }}column/{{ c.slug }}.html">
-        <div class="tile-media"><img src="{{ root }}{{ c.image }}" alt="" loading="lazy"></div>
-        <div class="tile-body"><span class="small muted">{{ c.date }} · {{ c.category }}</span><h3 style="font-size:17px">{{ c.title }}</h3><p>{{ c.summary }}</p><span class="link-arrow">읽어보기 →</span></div>
-      </a>
-      {% endfor %}
-    </div>
-    <p class="notice" style="margin-top:36px">더 많은 건강정보는 <a href="{{ site.blog }}" target="_blank" rel="noopener" style="color:var(--jade);font-weight:600">네이버 블로그</a>에서도 확인하실 수 있습니다.</p>
+    <nav class="cat-nav" aria-label="건강정보 분류 바로가기">
+      {% for g in groups %}<a href="#{{ g.id }}">{{ g.name }} <span>{{ g.rows|length }}</span></a>{% endfor %}
+    </nav>
+
+    {% for g in groups %}
+    <section class="cond-group" id="{{ g.id }}" data-reveal>
+      <div class="cond-group-head">
+        <h2 class="h2">{{ g.name }}</h2>
+        <span class="count">{{ g.rows|length }}편</span>
+      </div>
+      <ul class="cond-list col-list">
+        {% for c in g.rows %}
+        <li><a href="{{ root }}column/{{ c.slug | urlencode }}.html">
+          <b>{{ c.title }}</b>
+          {% if c.date %}<span class="med">{{ c.date }}</span>{% endif %}
+        </a></li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+
+    <div class="notice" style="margin-top:40px">본 건강정보는 이해를 돕기 위한 일반적인 내용으로, 개인의 진단과 치료를 대신하지 않습니다. 증상이 지속되면 내원 진료를 통해 확인해 주세요.</div>
   </div>
 </section>
+{% endblock %}
+{% block scripts %}
+<script>window.SITE_INDEX = {{ search_index | safe }};</script>
 {% endblock %}

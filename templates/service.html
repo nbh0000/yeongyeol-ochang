@@ -51,12 +51,14 @@
         {% for n in s.notes %}<p style="margin-bottom:6px">{{ n }}</p>{% endfor %}
       </div>
 
-      {% if s.poster %}
-      <h2>원내 안내 포스터</h2>
-      <div class="poster-grid" style="grid-template-columns:repeat(2,1fr);max-width:560px">
-        <img src="{{ root }}{{ s.poster }}" alt="{{ s.name }} 안내 포스터" loading="lazy">
-        {% if s.poster2 %}<img src="{{ root }}{{ s.poster2 }}" alt="{{ s.name }} 보험 안내" loading="lazy">{% endif %}
+      {% if s.insurance %}
+      <h2>{{ s.insurance.title }}</h2>
+      <div class="info-table">
+        {% for row in s.insurance.rows %}
+        <div class="info-row"><span class="k">{{ row[0] }}</span><span class="v">{{ row[1] }}</span></div>
+        {% endfor %}
       </div>
+      <p class="small muted" style="margin-top:10px">{{ s.insurance.note }}</p>
       {% endif %}
 
       <h2>{{ s.name }}, 무엇이 궁금하신가요?</h2>

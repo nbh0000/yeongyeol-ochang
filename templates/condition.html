@@ -1,23 +1,24 @@
 {% extends "base.html" %}
 {% block title %}오창 {{ c.name }} 한의원 | {{ site.name }}{% endblock %}
-{% block description %}{{ c.lead }}{% endblock %}
-{% block og_image %}{{ c.image }}{% endblock %}
+{% block description %}{{ c.summary }}{% endblock %}
+{% block keywords %}오창 {{ c.name }} 한의원,청주 {{ c.name }} 한의원,오창읍 {{ c.name }},청원구 {{ c.name }},오창 한의원,청주 한의원{% endblock %}
+{% if c.image %}{% block og_image %}{{ c.image }}{% endblock %}{% endif %}
 {% block content %}
 <section class="page-hero dark">
   <div class="container">
-    <nav class="breadcrumb" aria-label="현재 위치"><a href="{{ root }}index.html">홈</a><span>/</span><a href="{{ root }}conditions/index.html">질환·증상 건강정보</a><span>/</span><span>{{ c.name }}</span></nav>
-    <div class="hero-split">
+    <nav class="breadcrumb" aria-label="현재 위치"><a href="{{ root }}index.html">홈</a><span>/</span><a href="{{ root }}conditions/index.html">질환별 치료</a><span>/</span><span>{{ c.name }}</span></nav>
+    <div class="{% if c.image %}hero-split{% endif %}">
       <div>
-        <p class="eyebrow">{{ c.category }} · 원장 검토</p>
-        <h1>오창 {{ c.name }} 한의원, 청주·청원 증상 안내</h1>
-        <p class="lead">{{ c.lead }}</p>
-        <p class="small" style="margin-top:14px;color:rgba(255,255,255,.6)">작성·검토: {{ c.reviewer }} · 최근 검토 2026-09</p>
+        <p class="eyebrow">{{ c.category }}{% if c.medicalName %} · {{ c.medicalName }}{% endif %}</p>
+        <h1>오창 {{ c.name }} 한의원</h1>
+        {% if c.heading %}<p class="quote" style="margin-top:10px">{{ c.heading }}</p>{% endif %}
+        {% for p in c.intro %}<p class="lead" style="margin-top:10px">{{ p }}</p>{% endfor %}
         <div class="btn-group" style="margin-top:22px">
           <a class="btn btn-gold" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 진료 예약</a>
           <a class="btn btn-outline-light" href="tel:{{ site.phone_tel }}">전화 {{ site.phone }}</a>
         </div>
       </div>
-      <img src="{{ root }}{{ c.image }}" alt="{{ c.name }} 진료 · {{ site.name }}">
+      {% if c.image %}<img src="{{ root }}{{ c.image }}" alt="{{ c.name }} 진료 · {{ site.name }}">{% endif %}
     </div>
   </div>
 </section>
@@ -27,51 +28,48 @@
     <article class="prose">
       <div class="answer-box" style="margin-top:0">
         <div class="label">30초 핵심 답변</div>
-        <p>{{ c.lead }} 진단은 증상명만으로 확정하지 않으며, 움직임과 동반 증상, 필요한 검사 여부를 함께 판단합니다.</p>
+        <p>{{ c.summary }}</p>
+        <p class="meta">진료기관: {{ site.name }} · 위치: {{ site.address_short }} · 대표전화 {{ site.phone }}{% if c.updated %}<br>최근 검토 {{ c.updated }}{% endif %}</p>
       </div>
 
-      <p class="eyebrow" style="margin-bottom:6px">혹시 이런 순간이 있으신가요?</p>
-      <h2 style="margin-top:0">{{ c.name }}는 이런 생활 속 장면으로 시작되곤 합니다</h2>
-      <ul class="quote-list">
-        {% for s in c.scenes %}<li>{{ s }}</li>{% endfor %}
-      </ul>
+      {% set sym = c.symptoms.get("items") if c.symptoms else None %}
+      {% if sym %}
+      <h2>{{ c.symptoms.heading or (c.name ~ '은(는) 이런 장면으로 시작되곤 합니다') }}</h2>
+      <ul class="quote-list">{% for s in sym %}<li>{{ s }}</li>{% endfor %}</ul>
+      {% endif %}
 
-      <h2>{{ c.name }}란 무엇인가요?</h2>
-      <p>{{ c.what }}</p>
-
-      <h2>왜 좋아졌다 나빠지기를 반복할까요?</h2>
-      <p>{{ c.why_intro }}</p>
-      <div class="cause-grid">
-        {% for k in c.causes %}<div><h3>{{ k[0] }}</h3><p>{{ k[1] }}</p></div>{% endfor %}
-      </div>
-
-      <h2>이런 양상을 함께 확인합니다</h2>
-      <ul class="check-list">{% for s in c.signs %}<li>{{ s }}</li>{% endfor %}</ul>
-
-      <h2>비슷한 증상과 어떻게 구분할까요?</h2>
-      <ul>{% for d in c.diff %}<li>{{ d }}</li>{% endfor %}</ul>
-
-      <h2>이런 분이라면 진료를 권합니다</h2>
-      <ul class="arrow-list">{% for r in c.recommend %}<li>{{ r }}</li>{% endfor %}</ul>
-
-      <h2>진료 전에 메모할 4가지</h2>
-      <ol>{% for m in c.memo %}<li>{{ m }}</li>{% endfor %}</ol>
-
-      <h2>한의원에서는 무엇을 살필까요?</h2>
-      <p>온라인 검색어를 진단명으로 단정하지 않습니다. 증상이 시작된 계기와 움직임·생활 습관, 기존 검사 결과를 확인하고 필요한 경우 다른 의료기관의 검사나 협진을 먼저 안내합니다. 한방 진료가 적합한 경우에는 상태에 따라 침, 약침, 추나, 한약 등 가능한 선택지와 목표를 설명합니다.</p>
-      <p>연결한의원은 아픈 부위와 그 부위를 아프게 만든 원인을 구분해서 봅니다. 같은 진단명이라도 증상이 시작된 시점과 악화되는 자세·동작이 사람마다 다르면 치료 계획도 달라져야 한다고 보며, 치료 뒤 실제 반응을 다음 진료에서 확인해 계획을 보정합니다. <a class="link-arrow" href="{{ root }}philosophy.html">연결한의원의 진료 철학 자세히 보기 →</a></p>
-      {% for t in c.treat %}
-      <h3>{{ c.name }}와 {{ t[0] }}</h3>
-      <p>{{ t[1] }}</p>
+      {% for sec in c.sections %}
+      <h2>{{ sec.heading }}</h2>
+      {% if sec.paragraphs %}{% for p in sec.paragraphs %}<p>{{ p }}</p>{% endfor %}{% endif %}
+      {% set its = sec.get("items") %}
+      {% if its %}
+        {% if sec.style == 'checks' %}<ul class="check-list">
+        {% elif sec.style == 'recommendation' %}<ul class="arrow-list">
+        {% elif sec.style == 'steps' %}<ol>
+        {% else %}<ul>{% endif %}
+        {% for it in its %}
+          <li>{% if it is mapping %}{% if it.title %}<b>{{ it.title }}</b> {% endif %}{{ it.text or it.description or it.body or '' }}{% else %}{{ it }}{% endif %}</li>
+        {% endfor %}
+        {% if sec.style == 'steps' %}</ol>{% else %}</ul>{% endif %}
+      {% endif %}
+      {% if sec.note %}<div class="note-box">{{ sec.note }}</div>{% endif %}
       {% endfor %}
 
+      {% if c.treatments %}
+      <h2>{{ site.short }}에서는 이렇게 치료합니다</h2>
+      {% for t in c.treatments %}
+      <h3>{{ t.name }}</h3>
+      <p>{{ t.description }}</p>
+      {% endfor %}
+      {% endif %}
+
       <div class="redflag">
-        <b>지체하지 말아야 하는 신호</b>
-        <p>{{ c.redflag }}</p>
+        <b>이런 신호가 있다면 검사가 먼저입니다</b>
+        <p>갑작스러운 근력 저하나 감각 소실, 대소변 조절 변화, 고열을 동반한 통증, 외상 직후의 심한 변형이 있다면 한방 치료보다 영상검사와 해당 진료과의 신속한 평가가 먼저입니다. 진찰 결과 다른 의료기관의 검사가 필요하다고 판단되면 그 사실을 먼저 안내해 드립니다.</p>
       </div>
 
-      <h2>오창·청주·청원에서 {{ c.name }} 진료를 고려하고 계시다면</h2>
-      <p>지역명만 보고 진료를 정하기보다 {{ c.name }}의 위험 신호를 먼저 구분하고, 진찰 결과에 따라 치료 목표와 재평가 시점을 설명하는지 확인하는 것이 중요합니다. {{ site.name }}은 {{ site.address }}(부영6단지 정문 건너편)에 있으며 오창읍·오창산단·청주 생활권에서 내원 전 네이버 예약 또는 전화로 진료 가능 시간을 확인할 수 있습니다.</p>
+      <h2>오창·청주에서 {{ c.name }} 진료를 고려하고 계시다면</h2>
+      <p>{{ site.name }}은 {{ site.address }}({{ site.landmark }})에 있습니다. 평일은 저녁 8시까지, 토·일·공휴일도 오후 3시까지 진료하므로 퇴근 후나 주말에도 치료를 이어갈 수 있습니다. 방문 전 네이버 예약 또는 전화({{ site.phone }})로 진료 가능 시간을 확인해 주세요.</p>
       <div class="btn-group">
         <a class="btn btn-outline" href="{{ site.naver_place }}" target="_blank" rel="noopener">네이버지도 길찾기 →</a>
         <a class="btn btn-brick" href="tel:{{ site.phone_tel }}">전화 문의 {{ site.phone }}</a>
@@ -80,28 +78,19 @@
         {% for a in ["오창", "오창읍", "청주", "청원구", "오창산단"] %}<a href="{{ root }}location.html">{{ a }} {{ c.name }} 한의원</a>{% endfor %}
       </div>
 
-      {% if related_services %}
-      <h2>관련 진료 안내</h2>
-      <div class="grid-2">
-        {% for s in related_services %}
-        <a class="tile" href="{{ root }}services/{{ s.slug }}.html"><h3>{{ s.name }}</h3><p>{{ s.short }}</p><span class="link-arrow">자세히 보기 →</span></a>
-        {% endfor %}
+      {% if c.faqs %}
+      <h2>오창 {{ c.name }} 자주 묻는 질문</h2>
+      <div class="faq" data-single>
+        {% for q in c.faqs %}<details><summary>{{ q.question }}</summary><div class="answer"><p>{{ q.answer }}</p></div></details>{% endfor %}
       </div>
       {% endif %}
 
-      <p class="eyebrow" style="margin:48px 0 6px">오창 {{ c.name }} 자주 묻는 질문</p>
-      <h2 style="margin-top:0">검색 전에 궁금한 내용을 짧게 답합니다</h2>
-      <div class="faq" data-single>
-        <details><summary>오창 {{ c.name }} 한의원을 찾기 전에 무엇을 확인해야 하나요?</summary><div class="answer"><p>{{ c.lead }} 증상이 시작된 시점, 심해지는 동작이나 시간, 함께 나타나는 증상, 기존 검사와 복용약을 메모하면 진료 방향을 정하는 데 도움이 됩니다.</p></div></details>
-        <details><summary>검사를 먼저 받아야 하나요, 바로 진료를 받아도 되나요?</summary><div class="answer"><p>이미 받은 검사 결과가 있다면 지참해 주시면 진료에 도움이 됩니다. 검사 결과가 없더라도 문진과 진찰로 우선 상태를 확인하며, 진행 중 다른 의료기관의 검사나 협진이 먼저 필요하다고 판단되면 그 방향을 안내해 드립니다.</p></div></details>
-        <details><summary>{{ c.name }}는 약침·추나·한약을 모두 받아야 하나요?</summary><div class="answer"><p>아닙니다. 약침은 국소 압통과 조직 상태, 추나는 관절과 근육의 움직임, 한약은 전신 증상과 기존 질환·복용약을 각각 확인해 필요한 경우에만 선택합니다. 검사나 다른 진료가 먼저 필요한 상황도 있습니다.</p></div></details>
-        <details><summary>기존에 받고 있는 치료나 복용 중인 약과 병행할 수 있나요?</summary><div class="answer"><p>대부분 병행이 가능하지만, 복용 중인 약과 기존 진료 내용을 진료 시 알려주셔야 정확히 판단할 수 있습니다. 임의로 기존 치료나 약 복용을 중단하지 마시고 담당 의료진과 함께 조율하는 것을 권합니다.</p></div></details>
-        <details><summary>실비보험이나 자동차보험 적용은 어떻게 확인하나요?</summary><div class="answer"><p>가입하신 실손보험 상품과 가입 시기에 따라 침·추나 등 항목별 청구 가능 여부가 다를 수 있습니다. 정확한 보장 범위는 가입하신 보험사에 직접 확인하시는 것을 권합니다. 교통사고는 자동차보험 접수번호로 본인부담금 없이 진료가 가능합니다.</p></div></details>
-        <details><summary>치료 기간과 내원 횟수는 어떻게 정해지나요?</summary><div class="answer"><p>증상의 기간, 정도, 그리고 회복 속도에 따라 개인마다 다릅니다. 첫 진료에서 예상되는 방향을 설명해 드리고, 이후 경과를 보며 다음 내원 시점과 치료 계획을 함께 조정합니다. 특정 기간 안에 회복된다고 단정하지 않습니다.</p></div></details>
-        <details><summary>{{ c.name }} 때문에 바로 검사를 받아야 하는 신호가 있나요?</summary><div class="answer"><p>{{ c.redflag }}</p></div></details>
-        <details><summary>오창·청주에서 {{ c.name }} 진료 예약은 어떻게 하나요?</summary><div class="answer"><p>{{ site.name }}은 {{ site.address_short }}에 있습니다. 방문 전 네이버 예약, 카카오톡 채널 또는 전화({{ site.phone }})로 진료 가능 시간과 준비할 검사자료가 있는지 확인해 주세요.</p></div></details>
-      </div>
-      <p class="small muted" style="margin-top:20px">연관 검색 주제: 오창 {{ c.name }} · 오창 {{ c.name }} 한의원 · 청주 {{ c.name }} · 청주 {{ c.name }} 한의원 · 청원구 {{ c.name }} · 오창읍 {{ c.name }} 한의원</p>
+      {% if related %}
+      <h2>함께 보면 좋은 질환</h2>
+      <div class="tag-list">{% for r in related %}<a href="{{ root }}conditions/{{ r.slug | urlencode }}.html">{{ r.name }}</a>{% endfor %}</div>
+      {% endif %}
+
+      <div class="notice" style="margin-top:28px">본 정보는 이해를 돕기 위한 일반적인 의학 정보이며 개인의 진단·치료를 대신하지 않습니다. 정확한 진단은 내원 진료가 필요합니다.</div>
     </article>
 
     <aside class="sidebar">
@@ -113,20 +102,17 @@
         <a class="btn btn-brick" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
         <a class="btn btn-kakao" href="{{ site.kakao }}" target="_blank" rel="noopener">카카오톡 상담</a>
       </div>
-      <div class="side-card reviewer-card">
-        <h4>담당 원장</h4>
-        {% set rv = directors_by_name[c.reviewer[:3]] %}
-        <a href="{{ root }}about.html#{{ rv.slug }}" class="reviewer">
-          <img src="{{ root }}{{ rv.photo }}" alt="{{ rv.name }} {{ rv.role }}" loading="lazy">
-          <span><b>{{ rv.name }} {{ rv.role }}</b><small>{{ rv.specialty | join(' · ') }}</small></span>
-        </a>
-        <p class="small muted" style="margin-top:10px">원장별 진료 요일은 원장 소개 페이지에서 확인하세요.</p>
-        <a class="btn btn-outline" href="{{ root }}about.html">원장 소개 보기</a>
-      </div>
       <div class="side-card">
         <h4>{{ c.category }} 다른 질환</h4>
-        <ul>{% for o in conditions if o.category == c.category and o.slug != c.slug %}<li><a href="{{ root }}conditions/{{ o.slug }}.html">{{ o.name }} →</a></li>{% endfor %}</ul>
+        <ul>{% for o in siblings %}<li><a href="{{ root }}conditions/{{ o.slug | urlencode }}.html">{{ o.name }} →</a></li>{% endfor %}</ul>
+        <a class="link-arrow" href="{{ root }}conditions/index.html">질환 전체 보기 →</a>
       </div>
+      {% if columns_rel %}
+      <div class="side-card">
+        <h4>관련 건강정보</h4>
+        <ul>{% for k in columns_rel %}<li><a href="{{ root }}column/{{ k.slug | urlencode }}.html">{{ k.title }}</a></li>{% endfor %}</ul>
+      </div>
+      {% endif %}
     </aside>
   </div>
 </section>

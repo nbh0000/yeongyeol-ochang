@@ -1,39 +1,58 @@
 {% extends "base.html" %}
 {% block title %}{{ c.title }} | {{ site.name }}{% endblock %}
 {% block description %}{{ c.summary }}{% endblock %}
-{% block og_image %}{{ c.image }}{% endblock %}
 {% block content %}
 <section class="page-hero">
   <div class="container">
-    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><a href="{{ root }}column/index.html">건강칼럼</a><span>/</span><span>{{ c.category }}</span></nav>
-    <p class="eyebrow">{{ c.category }} · {{ c.date }}</p>
+    <nav class="breadcrumb"><a href="{{ root }}index.html">홈</a><span>/</span><a href="{{ root }}column/index.html">건강정보</a><span>/</span><span>{{ c.group }}</span></nav>
+    <p class="eyebrow">{{ c.group }}{% if c.date %} · {{ c.date }}{% endif %}</p>
     <h1>{{ c.title }}</h1>
     <p class="lead">{{ c.summary }}</p>
-    <p class="small muted" style="margin-top:12px">작성·검토: {{ c.reviewer }}</p>
+    <p class="small muted" style="margin-top:12px">작성·검토: {{ c.reviewer }} · {{ site.name }}</p>
   </div>
 </section>
 <section class="section">
   <div class="container detail-layout">
     <article class="prose">
-      <figure style="margin-top:0"><img src="{{ root }}{{ c.image }}" alt="" style="aspect-ratio:16/9;object-fit:cover;width:100%"></figure>
-      {% for p in c.body %}<p>{{ p }}</p>{% endfor %}
-      <div class="notice">본 칼럼은 일반적인 건강정보이며 개인의 진단이나 치료를 대신하지 않습니다. 증상이 지속되면 진료를 통해 확인하시기 바랍니다.</div>
+      {% for b in c.blocks %}
+        {% if b.tag == 'h2' %}<h2>{{ b.text }}</h2>
+        {% elif b.tag == 'h3' %}<h3>{{ b.text }}</h3>
+        {% elif b.tag == 'li' %}<ul><li>{{ b.text }}</li></ul>
+        {% else %}<p>{{ b.text }}</p>{% endif %}
+      {% endfor %}
+
+      <div class="notice">본 건강정보는 일반적인 내용이며 개인의 진단이나 치료를 대신하지 않습니다. 증상이 지속되면 진료를 통해 확인하시기 바랍니다.</div>
+
+      <h2>오창·청주에서 진료를 고려하고 계시다면</h2>
+      <p>{{ site.name }}은 {{ site.address }}({{ site.landmark }})에 있습니다. 평일 저녁 8시까지, 토·일·공휴일도 오후 3시까지 진료합니다. 방문 전 네이버 예약 또는 전화({{ site.phone }})로 진료 가능 시간을 확인해 주세요.</p>
+      <div class="btn-group">
+        <a class="btn btn-brick" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
+        <a class="btn btn-outline" href="tel:{{ site.phone_tel }}">전화 {{ site.phone }}</a>
+        <a class="btn btn-outline" href="{{ root }}location.html">오시는 길</a>
+      </div>
+
       {% if related_conditions %}
       <h2>관련 질환 정보</h2>
-      <div class="tag-list">{% for r in related_conditions %}<a href="{{ root }}conditions/{{ r.slug }}.html">{{ r.name }}</a>{% endfor %}</div>
+      <div class="tag-list">{% for r in related_conditions %}<a href="{{ root }}conditions/{{ r.slug | urlencode }}.html">오창 {{ r.name }} 한의원</a>{% endfor %}</div>
       {% endif %}
     </article>
     <aside class="sidebar">
       <div class="side-card">
-        <h4>다른 칼럼</h4>
-        <ul>{% for o in columns if o.slug != c.slug %}<li><a href="{{ root }}column/{{ o.slug }}.html">{{ o.title }}</a></li>{% endfor %}</ul>
-      </div>
-      <div class="side-card">
         <h4>상담·예약</h4>
-        <p>{{ site.phone }}</p>
+        <p><b>{{ site.phone }}</b></p>
+        <ul class="info-list" style="margin:10px 0">
+          {% for h in site.hours %}<li><span>{{ h.label }}</span><b>{{ h.time }}</b></li>{% endfor %}
+        </ul>
         <a class="btn btn-brick" href="{{ site.naver_booking }}" target="_blank" rel="noopener">네이버 예약</a>
         <a class="btn btn-kakao" href="{{ site.kakao }}" target="_blank" rel="noopener">카카오톡 상담</a>
       </div>
+      {% if siblings %}
+      <div class="side-card">
+        <h4>{{ c.group }} 건강정보</h4>
+        <ul>{% for o in siblings %}<li><a href="{{ root }}column/{{ o.slug | urlencode }}.html">{{ o.title }}</a></li>{% endfor %}</ul>
+        <a class="link-arrow" href="{{ root }}column/index.html">전체 보기 →</a>
+      </div>
+      {% endif %}
     </aside>
   </div>
 </section>

@@ -2,25 +2,27 @@
 """
 연결한의원 청주오창 홈페이지 정적 빌드 스크립트
 
-  python build.py             → docs/ 폴더에 HTML 생성
-  python tools/build_images.py → assets/ 원본을 docs/images/ 로 최적화 (사진 바뀔 때만)
+  python build.py                    → docs/ 폴더에 HTML 생성
+  python tools/build_images.py       → assets/ 원본을 docs/images/ 로 최적화 (사진 바뀔 때만)
+  python tools/scrape_network.py all → 연결한의원 네트워크 질환·건강정보 수집 (src/generated/*.json)
 
 콘텐츠 수정은 src/*.py, 레이아웃 수정은 templates/*.html, 스타일은 docs/css/style.css
 """
 import json
 import os
 import sys
+import urllib.parse
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from site_info import SITE, NAV, DIRECTORS, FEATURED, TICKER_ROW1, TICKER_ROW2, STATS, CORE, WHO, WHY, HOME_FAQ, RECORD
 from services import SERVICES
-from conditions import CONDITIONS, CONDITION_CATEGORIES
-from columns import COLUMNS, PRINCIPLES, PATIENT_QUESTIONS, FAQ_GROUPS
+from columns import PRINCIPLES, PATIENT_QUESTIONS, FAQ_GROUPS
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "docs")
+GEN = os.path.join(ROOT, "src", "generated")
 
 env = Environment(
     loader=FileSystemLoader(os.path.join(ROOT, "templates")),
@@ -28,51 +30,113 @@ env = Environment(
     trim_blocks=True,
     lstrip_blocks=True,
 )
+env.filters["urlencode"] = lambda s: urllib.parse.quote(str(s), safe="")
 
+# ── 수집 데이터 (연결한의원 네트워크 공개 콘텐츠를 청주오창 버전으로 변환) ──────
+CONDITIONS = json.load(open(os.path.join(GEN, "conditions.json"), encoding="utf-8"))
+COLUMNS = json.load(open(os.path.join(GEN, "columns.json"), encoding="utf-8"))
 COND = {c["slug"]: c for c in CONDITIONS}
-SVC = {s["slug"]: s for s in SERVICES}
 
-# 해시태그 → 링크
-TICKER_LINKS = {
-    "오십견": "conditions/frozen-shoulder.html", "목디스크": "conditions/cervical-disc.html",
-    "허리디스크": "conditions/lumbar-disc.html", "테니스엘보": "conditions/tennis-elbow.html",
-    "손목터널증후군": "conditions/carpal-tunnel.html", "족저근막염": "conditions/plantar-fasciitis.html",
-    "좌골신경통": "conditions/sciatica.html", "척추관협착증": "conditions/spinal-stenosis.html",
-    "녹용2배공진단": "services/gongjindan.html", "한방다이어트": "services/diet.html",
-    "교통사고후유증": "conditions/traffic-accident.html", "갱년기": "conditions/menopause.html",
-    "불면증": "conditions/insomnia.html", "만성두통": "conditions/chronic-headache.html",
-    "알레르기비염": "conditions/allergic-rhinitis.html", "역류성식도염": "conditions/reflux.html",
+# 보유한 실사 이미지가 있는 질환에만 대표 이미지 연결
+COND_IMAGE = {
+    "허리디스크": "images/ai/lumbar-disc.webp", "목디스크": "images/ai/cervical-disc.webp",
+    "오십견": "images/ai/frozen-shoulder.webp", "척추관협착증": "images/ai/spinal-stenosis.webp",
+    "척추협착증": "images/ai/spinal-stenosis.webp", "테니스엘보": "images/ai/tennis-elbow.webp",
+    "손목터널증후군": "images/ai/carpal-tunnel.webp", "수근관증후군": "images/ai/carpal-tunnel.webp",
+    "족저근막염": "images/ai/plantar-fasciitis.webp", "발바닥근막염": "images/ai/plantar-fasciitis.webp",
+    "좌골신경통": "images/ai/sciatica.webp", "교통사고-병원": "images/ai/traffic-accident.webp", "교통사고-한방-재활": "images/ai/traffic-accident.webp",
+    "교통사고-한의원": "images/ai/traffic-accident.webp", "만성-두통": "images/ai/chronic-headache.webp",
+    "두통-클리닉": "images/ai/chronic-headache.webp", "역류성식도염": "images/ai/reflux.webp",
+    "소화불량": "images/ai/indigestion.webp", "기능성-소화불량": "images/ai/indigestion.webp",
+    "갱년기증후군": "images/ai/menopause.webp", "갱년기": "images/ai/menopause.webp",
+    "불면증": "images/ai/insomnia.webp", "만성피로": "images/ai/insomnia.webp",
+    "알레르기비염": "images/ai/allergic-rhinitis.webp", "만성-비염": "images/ai/allergic-rhinitis.webp",
 }
+for _c in CONDITIONS:
+    _c["image"] = COND_IMAGE.get(_c["slug"])
+
+CAT_ORDER = ["근골격·통증", "교통사고", "안면·두통", "신경정신·수면", "소화기", "산부인과·여성",
+             "호흡기·알레르기", "피부", "턱관절", "소아·성장", "다이어트", "보약·공진단"]
+
+
+def categories():
+    out, seen = [], set()
+    names = CAT_ORDER + sorted({c["category"] for c in CONDITIONS} - set(CAT_ORDER))
+    for i, name in enumerate(names):
+        items = sorted([c for c in CONDITIONS if c["category"] == name], key=lambda c: c["name"])
+        if items and name not in seen:
+            seen.add(name)
+            out.append({"name": name, "id": "cat-%d" % i, "rows": items})
+    return out
+
+
+# ── 건강정보 분류 ───────────────────────────────────────────────────────────
+COL_GROUPS = [
+    ("근골격·통증", ["디스크", "허리", "어깨", "오십견", "무릎", "족저", "손목", "엘보", "추나", "저림", "관절", "협착", "골반", "거북목", "염좌", "통증"]),
+    ("교통사고", ["교통사고", "자동차보험"]),
+    ("두통·어지럼", ["두통", "어지럼", "편두통", "이명", "안면"]),
+    ("수면·신경정신", ["불면", "수면", "불안", "우울", "화병", "공황", "스트레스", "피로", "번아웃", "집중", "틱", "강박"]),
+    ("소화기", ["소화", "역류", "속쓰림", "변비", "설사", "담적", "복통", "식욕", "위염", "장염"]),
+    ("여성·산후", ["생리", "월경", "갱년기", "산후", "임신", "난임", "자궁", "질염", "방광", "유산", "출산", "부종"]),
+    ("소아·성장", ["소아", "성장", "어린이", "수험생", "학습", "아이"]),
+    ("보약·공진단", ["공진단", "보약", "녹용", "면역", "기력", "원기", "체력"]),
+    ("다이어트", ["다이어트", "감비", "체중", "비만", "위고비", "마운자로"]),
+    ("피부·알레르기", ["비염", "알레르기", "아토피", "두드러기", "피부", "습진", "건선", "탈모"]),
+]
+
+
+def prepare_columns():
+    for c in COLUMNS:
+        hay = c["title"] + " " + " ".join(b["text"] for b in c["blocks"][:4])
+        best, hits_best = "기타 건강정보", 0
+        for name, kws in COL_GROUPS:
+            hits = sum(hay.count(k) for k in kws)
+            if hits > hits_best:
+                best, hits_best = name, hits
+        c["group"] = best
+        body = [b for b in c["blocks"] if b["tag"] == "p"]
+        c["summary"] = (body[0]["text"] if body else c["title"])[:170]
+        c["reviewer"] = "김현교 대표원장"
+        c["blocks"] = [b for b in c["blocks"] if b["text"].strip() != c["title"].strip()]
+    groups = []
+    for i, name in enumerate([g[0] for g in COL_GROUPS] + ["기타 건강정보"]):
+        items = sorted([c for c in COLUMNS if c["group"] == name], key=lambda c: (c["date"] or ""), reverse=True)
+        if items:
+            groups.append({"name": name, "id": "col-%d" % i, "rows": items})
+    return groups
 
 
 def search_index():
-    idx = []
-    for s in SERVICES:
-        idx.append({"title": s["name"], "url": f"services/{s['slug']}.html", "type": "진료 안내", "keywords": s["short"] + " " + " ".join(s["who"])})
+    idx = [{"title": s["name"], "url": "services/%s.html" % s["slug"], "type": "진료 안내",
+            "keywords": s["short"] + " " + " ".join(s["who"])} for s in SERVICES]
     for c in CONDITIONS:
-        idx.append({"title": c["name"], "url": f"conditions/{c['slug']}.html", "type": "질환 정보", "keywords": c["category"] + " " + c["lead"] + " " + " ".join(c["scenes"])})
+        idx.append({"title": "오창 %s 한의원" % c["name"],
+                    "url": "conditions/%s.html" % urllib.parse.quote(c["slug"], safe=""),
+                    "type": c["category"],
+                    "keywords": " ".join([c["name"], c.get("medicalName") or "", c.get("summary") or ""] +
+                                         list((c.get("symptoms") or {}).get("items") or [])[:4])})
     for c in COLUMNS:
-        idx.append({"title": c["title"], "url": f"column/{c['slug']}.html", "type": "건강 칼럼", "keywords": c["category"] + " " + c["summary"]})
+        idx.append({"title": c["title"], "url": "column/%s.html" % urllib.parse.quote(c["slug"], safe=""),
+                    "type": "건강정보", "keywords": c["group"] + " " + c["summary"]})
     idx += [
-        {"title": "오시는 길 · 주차 안내", "url": "location.html", "type": "안내", "keywords": "주차 위치 주소 지도 길찾기 주성리 617 부영 부민빌딩 오창 2산단로 진료시간 야간 주말 공휴일"},
-        {"title": "진료시간 · 예약 방법", "url": "faq.html", "type": "안내", "keywords": "진료시간 예약 네이버 카카오 전화 야간 주말 공휴일 365일"},
-        {"title": "원장 소개", "url": "about.html", "type": "안내", "keywords": "원장 김현교 신재형 이상현 이력 진료요일 진료시간표 한의사"},
-        {"title": "진료철학", "url": "philosophy.html", "type": "안내", "keywords": "진료 원칙 철학 치료 강도 반응 보정 설명"},
-        {"title": "자주 묻는 질문", "url": "faq.html", "type": "안내", "keywords": "FAQ 질문 보험 실비 비용 한약 침 주차"},
+        {"title": "오시는 길 · 주차 안내", "url": "location.html", "type": "안내",
+         "keywords": "주차 위치 주소 지도 길찾기 주성리 617 부영 부민빌딩 오창 2산단로 진료시간 야간 주말 공휴일"},
+        {"title": "원장 소개", "url": "about.html", "type": "안내", "keywords": "원장 김현교 신재형 이상현 이력 진료요일"},
+        {"title": "진료철학", "url": "philosophy.html", "type": "안내", "keywords": "진료 원칙 철학 치료 강도 반응 보정"},
+        {"title": "자주 묻는 질문", "url": "faq.html", "type": "안내", "keywords": "FAQ 예약 보험 실비 비용 한약 침 주차 진료시간"},
     ]
     return idx
 
 
 def jsonld(page_path, extra=None):
     data = {
-        "@context": "https://schema.org",
-        "@type": "MedicalClinic",
-        "name": SITE["name"],
-        "url": SITE["url"] + "/" + page_path,
-        "telephone": "+82-" + SITE["phone"][1:],
-        "image": SITE["url"] + "/images/hero/director-shin.webp",
+        "@context": "https://schema.org", "@type": "MedicalClinic", "name": SITE["name"],
+        "url": SITE["url"] + "/" + page_path, "telephone": "+82-" + SITE["phone"][1:],
+        "image": SITE["url"] + "/images/hero/directors-team.webp",
         "logo": SITE["url"] + "/images/logo/symbol-green-512.png",
-        "address": {"@type": "PostalAddress", "streetAddress": "오창읍 2산단로 132, 301·302호", "addressLocality": "청주시 청원구", "addressRegion": "충청북도", "postalCode": "28116", "addressCountry": "KR"},
+        "address": {"@type": "PostalAddress", "streetAddress": "오창읍 2산단로 132, 301·302호",
+                    "addressLocality": "청주시 청원구", "addressRegion": "충청북도",
+                    "postalCode": "28116", "addressCountry": "KR"},
         "geo": {"@type": "GeoCoordinates", "latitude": SITE["coords"]["lat"], "longitude": SITE["coords"]["lng"]},
         "openingHoursSpecification": [
             {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "09:30", "closes": "20:00"},
@@ -81,84 +145,89 @@ def jsonld(page_path, extra=None):
         "medicalSpecialty": "한의학",
         "sameAs": [SITE["naver_place_full"], SITE["kakao"], SITE["blog"]],
     }
-    if extra:
-        data = [data, extra]
-    return json.dumps(data, ensure_ascii=False, indent=1)
+    return json.dumps([data, extra] if extra else data, ensure_ascii=False, indent=1)
+
+
+PAGES = []
 
 
 def render(template, out_path, **ctx):
-    depth = out_path.count("/")
-    root = "../" * depth
-    page_path = out_path
-    base_ctx = dict(
-        site=SITE, nav=NAV, services=SERVICES, conditions=CONDITIONS, columns=COLUMNS, directors=DIRECTORS,
-        directors_by_name={d["name"]: d for d in DIRECTORS},
-        root=root, page_path=page_path, jsonld=ctx.pop("jsonld", None) or jsonld(page_path),
-    )
-    base_ctx.update(ctx)
-    html = env.get_template(template).render(**base_ctx)
-    full = os.path.join(OUT, out_path.replace("/", os.sep))
+    root = "../" * out_path.count("/")
+    base = dict(site=SITE, nav=NAV, services=SERVICES, conditions=CONDITIONS, columns=COLUMNS,
+                directors=DIRECTORS, directors_by_name={d["name"]: d for d in DIRECTORS},
+                root=root, page_path=out_path, jsonld=ctx.pop("jsonld", None) or jsonld(out_path))
+    base.update(ctx)
+    html = env.get_template(template).render(**base)
+    full = os.path.join(OUT, urllib.parse.unquote(out_path).replace("/", os.sep))
     os.makedirs(os.path.dirname(full), exist_ok=True)
-    with open(full, "w", encoding="utf-8") as f:
-        f.write(html)
-    return out_path
+    open(full, "w", encoding="utf-8").write(html)
+    PAGES.append(out_path)
 
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    pages = []
+    col_groups = prepare_columns()
+    idx_json = json.dumps(search_index(), ensure_ascii=False)
+    cats = categories()
 
-    # 홈
-    pages.append(render("index.html", "index.html",
-                        featured=FEATURED, ticker1=TICKER_ROW1, ticker2=TICKER_ROW2, ticker_links=TICKER_LINKS,
-                        stats=STATS, record=RECORD, core=CORE, who=WHO, why=WHY, home_faq=HOME_FAQ,
-                        search_index=json.dumps(search_index(), ensure_ascii=False)))
+    ticker_links = {}
+    for t in TICKER_ROW1 + TICKER_ROW2:
+        key = t.replace(" ", "")
+        target = next((c["slug"] for c in CONDITIONS if c["name"].replace(" ", "") == key), None)
+        ticker_links[t] = ("conditions/%s.html" % urllib.parse.quote(target, safe="")) if target else "conditions/index.html"
 
-    # 진료 안내
-    pages.append(render("services_index.html", "services/index.html"))
+    render("index.html", "index.html", featured=FEATURED, ticker1=TICKER_ROW1, ticker2=TICKER_ROW2,
+           ticker_links=ticker_links, stats=STATS, record=RECORD, core=CORE, who=WHO, why=WHY,
+           home_faq=HOME_FAQ, search_index=idx_json)
+
+    render("services_index.html", "services/index.html")
     for s in SERVICES:
         faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
                   "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in s["faq"]]}
-        pages.append(render("service.html", f"services/{s['slug']}.html", s=s,
-                            related_conditions=[COND[x] for x in s.get("related", []) if x in COND],
-                            jsonld=jsonld(f"services/{s['slug']}.html", faq_ld)))
+        rel = [COND[x] for x in s.get("related", []) if x in COND]
+        render("service.html", "services/%s.html" % s["slug"], s=s, related_conditions=rel,
+               jsonld=jsonld("services/%s.html" % s["slug"], faq_ld))
 
-    # 질환 정보
-    pages.append(render("conditions_index.html", "conditions/index.html", categories=CONDITION_CATEGORIES))
+    render("conditions_index.html", "conditions/index.html", categories=cats, search_index=idx_json)
     for c in CONDITIONS:
-        pages.append(render("condition.html", f"conditions/{c['slug']}.html", c=c,
-                            related_services=[SVC[x] for x in c.get("services", []) if x in SVC]))
+        sib = [o for o in CONDITIONS if o["category"] == c["category"] and o["slug"] != c["slug"]][:10]
+        rel = [COND[r] for r in c.get("related", []) if r in COND][:8]
+        cols = [k for k in COLUMNS if c["name"] in k["title"]][:5]
+        ld = None
+        if c.get("faqs"):
+            ld = {"@context": "https://schema.org", "@type": "FAQPage",
+                  "mainEntity": [{"@type": "Question", "name": q["question"],
+                                  "acceptedAnswer": {"@type": "Answer", "text": q["answer"]}} for q in c["faqs"]]}
+        p = "conditions/%s.html" % urllib.parse.quote(c["slug"], safe="")
+        render("condition.html", p, c=c, siblings=sib, related=rel, columns_rel=cols, jsonld=jsonld(p, ld))
 
-    # 칼럼
-    pages.append(render("column_index.html", "column/index.html"))
+    render("column_index.html", "column/index.html", groups=col_groups, search_index=idx_json)
     for c in COLUMNS:
-        pages.append(render("column.html", f"column/{c['slug']}.html", c=c,
-                            related_conditions=[COND[x] for x in c.get("related", []) if x in COND]))
+        sib = [o for o in COLUMNS if o["group"] == c["group"] and o["slug"] != c["slug"]][:8]
+        rel = [x for x in CONDITIONS if x["name"] in c["title"]][:6]
+        render("column.html", "column/%s.html" % urllib.parse.quote(c["slug"], safe=""),
+               c=c, siblings=sib, related_conditions=rel)
 
-    # 단일 페이지
-    pages.append(render("about.html", "about.html", days=["월", "화", "수", "목", "금", "토", "일"]))
-    pages.append(render("philosophy.html", "philosophy.html", principles=PRINCIPLES, patient_questions=PATIENT_QUESTIONS))
-    lat, lng = SITE["coords"]["lat"], SITE["coords"]["lng"]
-    bbox = f"{lng - 0.006:.6f}%2C{lat - 0.0035:.6f}%2C{lng + 0.006:.6f}%2C{lat + 0.0035:.6f}"
-    pages.append(render("location.html", "location.html", bbox=bbox))
+    render("about.html", "about.html", days=["월", "화", "수", "목", "금", "토", "일"])
+    render("philosophy.html", "philosophy.html", principles=PRINCIPLES, patient_questions=PATIENT_QUESTIONS)
+    render("location.html", "location.html")
     faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
               "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
                              for g in FAQ_GROUPS for q, a in g["items"]] +
                             [{"@type": "Question", "name": f["q"], "acceptedAnswer": {"@type": "Answer", "text": f["a"]}} for f in HOME_FAQ]}
-    pages.append(render("faq.html", "faq.html", faq_groups=FAQ_GROUPS, home_faq=HOME_FAQ, jsonld=jsonld("faq.html", faq_ld)))
-    pages.append(render("privacy.html", "privacy-policy.html"))
+    render("faq.html", "faq.html", faq_groups=FAQ_GROUPS, home_faq=HOME_FAQ, jsonld=jsonld("faq.html", faq_ld))
+    render("privacy.html", "privacy-policy.html")
 
-    # sitemap / robots
     with open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
-        for p in pages:
+        for p in PAGES:
             loc = SITE["url"] + "/" + ("" if p == "index.html" else p)
-            f.write(f"  <url><loc>{loc}</loc><changefreq>weekly</changefreq></url>\n")
+            f.write("  <url><loc>%s</loc><changefreq>weekly</changefreq></url>\n" % loc)
         f.write("</urlset>\n")
-    with open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8") as f:
-        f.write(f"User-agent: *\nAllow: /\nSitemap: {SITE['url']}/sitemap.xml\n")
+    open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8").write(
+        "User-agent: *\nAllow: /\nSitemap: %s/sitemap.xml\n" % SITE["url"])
 
-    print(f"built {len(pages)} pages → {OUT}")
+    print("built %d pages → %s" % (len(PAGES), OUT))
 
 
 if __name__ == "__main__":

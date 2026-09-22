@@ -102,6 +102,10 @@ def main():
     save(D("07_오시는길_주차안내", "KakaoTalk_20260820_094956324.jpg"), "location/parking-guide", 1264)
     save(D("07_오시는길_주차안내", "KakaoTalk_20260820_094956324.jpg"), "location/parking-photos", 1100, crop=(100, 1075, 1170, 1640))
 
+    # ── 원장님 제공 배너 (공진단·추나·다이어트) ─────────────────────────────
+    for n in ("gongjindan", "chuna", "diet"):
+        save(D("08_추가사진", n + ".jpeg"), "banner/" + n, 1424, quality=86)
+
     # ── 로고 ────────────────────────────────────────────────────────────
     lg = "05_로고"
     save(D(lg, "KakaoTalk_20251121_200753637_01.png"), "logo/logo-green", 800, fmt="png")

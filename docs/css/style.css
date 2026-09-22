@@ -159,6 +159,46 @@ button { font-family: inherit; cursor: pointer; }
 .hero-chips a:hover { background: rgba(255,255,255,.18); }
 .hero-scroll { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 2; color: rgba(255,255,255,.7); font-size: 22px; animation: bob 1.8s ease-in-out infinite; }
 @keyframes bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 8px); } }
+/* 밝은 배경 히어로 (원장 3인 합성 이미지용) */
+.hero-light { color: var(--ink); background: var(--ivory); }
+.hero-light .hero-media img { object-position: right bottom; object-fit: cover; filter: none; }
+.hero-light .hero-media::after {
+  background: linear-gradient(90deg, rgba(241,237,230,.96) 0%, rgba(241,237,230,.88) 24%, rgba(241,237,230,.45) 38%, rgba(241,237,230,0) 52%);
+}
+.hero-light .hero-media::before { background: none; }
+.hero-light .hero-eyebrow { color: var(--gold); }
+.hero-light .hero-sub { color: var(--jade); }
+.hero-light h1 { text-shadow: none; }
+.hero-light .hero-desc { margin-top: 16px; font-size: 16px; color: var(--inkfade); max-width: 460px; }
+.hero-light .hero-chips a { border-color: rgba(36,35,33,.2); background: rgba(255,255,255,.7); color: var(--ink); }
+.hero-light .hero-chips a:hover { background: #fff; border-color: var(--jade); color: var(--jade); }
+.hero-light .hero-scroll { color: rgba(36,35,33,.45); }
+@media (max-width: 860px) {
+  .hero-light .hero-media img { object-position: 74% bottom; }
+  .hero-light .hero-media::after {
+    background: linear-gradient(180deg, rgba(241,237,230,.97) 0%, rgba(241,237,230,.9) 42%, rgba(241,237,230,.35) 68%, rgba(241,237,230,0) 100%);
+  }
+  .hero-light .container { padding-bottom: 240px; }
+  .hero-light h1 { font-size: clamp(26px, 7vw, 36px); }
+}
+
+/* 히어로 아래 질환·증상 검색 */
+.hero-search-band { background: var(--paper); border-bottom: 1px solid var(--line); padding: 26px 0 30px; }
+.hero-search { display: flex; gap: 10px; }
+.hero-search-field { position: relative; flex: 1; }
+.hero-search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--jade); }
+.hero-search input {
+  width: 100%; padding: 15px 18px 15px 44px; border: 1px solid var(--line); border-radius: var(--radius);
+  font: inherit; background: #fff;
+}
+.hero-search input:focus { outline: none; border-color: var(--jade); box-shadow: 0 0 0 3px rgba(62,107,92,.12); }
+.hero-search .btn { padding-inline: 30px; }
+.hero-search-hint { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--inkfade); }
+.hero-search-hint a { padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); }
+.hero-search-hint a:hover { border-color: var(--jade); color: var(--jade); }
+.hero-search-band .search-results { margin-top: 14px; }
+@media (max-width: 600px) { .hero-search { flex-wrap: wrap; } .hero-search-field { flex-basis: 100%; } .hero-search .btn { flex: 1; } }
+
 @media (max-width: 720px) {
   .hero { min-height: 560px; }
   .hero-media img { object-position: 68% 0%; }
@@ -404,9 +444,21 @@ button { font-family: inherit; cursor: pointer; }
 .reviewer:hover b { color: var(--jade); }
 @media (max-width: 960px) { .detail-layout { grid-template-columns: 1fr; gap: 40px; } .sidebar { position: static; } }
 
+.info-table { border-top: 2px solid var(--jade); margin: 16px 0 6px; }
+.info-row { display: grid; grid-template-columns: 130px 1fr; gap: 16px; padding: 14px 4px; border-bottom: 1px solid var(--line); }
+.info-row .k { font-weight: 700; color: var(--jadedeep); font-size: 15px; }
+.info-row .v { color: #3a3935; font-size: 15px; }
+@media (max-width: 560px) { .info-row { grid-template-columns: 1fr; gap: 4px; } }
+
 .poster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
 .poster-grid img { border-radius: var(--radius); border: 1px solid var(--line); box-shadow: var(--shadow); }
-@media (max-width: 720px) { .poster-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 720px) { .info-table { border-top: 2px solid var(--jade); margin: 16px 0 6px; }
+.info-row { display: grid; grid-template-columns: 130px 1fr; gap: 16px; padding: 14px 4px; border-bottom: 1px solid var(--line); }
+.info-row .k { font-weight: 700; color: var(--jadedeep); font-size: 15px; }
+.info-row .v { color: #3a3935; font-size: 15px; }
+@media (max-width: 560px) { .info-row { grid-template-columns: 1fr; gap: 4px; } }
+
+.poster-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* 원장 소개 */
 .director { display: grid; grid-template-columns: 340px 1fr; gap: 48px; align-items: start; padding: 48px 0; border-top: 1px solid var(--line); }
@@ -467,3 +519,31 @@ button { font-family: inherit; cursor: pointer; }
 .tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .tag-list a { font-size: 13.5px; padding: 8px 14px; background: #fff; border: 1px solid var(--line); border-radius: 999px; }
 .tag-list a:hover { border-color: var(--jade); color: var(--jade); }
+
+/* ── 질환·건강정보 목록 (이미지 없는 링크형) ───────────────────────────────── */
+.cat-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+.cat-nav a {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: 1px solid var(--line);
+  border-radius: 999px; background: #fff; font-size: 14px; font-weight: 500;
+}
+.cat-nav a span { font-size: 12px; color: var(--jade); font-weight: 700; }
+.cat-nav a:hover { border-color: var(--jade); color: var(--jade); }
+
+.cond-group { margin-bottom: 52px; scroll-margin-top: calc(var(--header-h) + 20px); }
+.cond-group-head { display: flex; align-items: baseline; gap: 12px; padding-bottom: 14px; border-bottom: 2px solid var(--jade); margin-bottom: 20px; }
+.cond-group-head .h2 { font-size: 22px; }
+.cond-group-head .count { font-size: 13px; color: var(--inkfade); }
+
+.cond-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cond-list li { min-width: 0; }
+.cond-list a {
+  display: block; padding: 14px 16px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+}
+.cond-list a:hover { border-color: var(--jade); transform: translateY(-1px); box-shadow: var(--shadow); }
+.cond-list b { display: block; font-size: 15px; font-weight: 600; line-height: 1.45; }
+.cond-list .med { display: block; margin-top: 4px; font-size: 12.5px; color: var(--inkfade); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cond-list a:hover b { color: var(--jadedeep); }
+.col-list b { font-weight: 500; font-size: 14.5px; }
+@media (max-width: 900px) { .cond-list { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .cond-list { grid-template-columns: 1fr; } }
