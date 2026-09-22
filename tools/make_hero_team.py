@@ -106,25 +106,46 @@ def main():
 
     # 인물 배치: 좌측은 카피 공간, 우측에 세 원장 (가운데 대표원장이 가장 크게)
     # 왼쪽부터 신재형 · 김현교(대표, 가장 크게) · 이상현 순으로 겹치지 않게 배치
-    order = [("shin", 0.88), ("kim", 1.00), ("lee", 0.88)]
+    order = [("shin", 0.93), ("kim", 1.02), ("lee", 0.93)]
     people = [(k, fit_height(cutout(k), round(H * hr))) for k, hr in order]
-    gap = -round(W * 0.012)          # 살짝 겹쳐 한 팀처럼 보이게
+    gap = -round(W * 0.018)          # 살짝 겹쳐 한 팀처럼 보이게
     total = sum(im.width for _, im in people) + gap * (len(people) - 1)
     # 우측 62% 영역 안에 들어오도록 축소
-    avail = round(W * 0.68)
+    avail = round(W * 0.53)
     if total > avail:
         k = avail / total
         people = [(key, im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)) for key, im in people]
         gap = round(gap * k)
         total = sum(im.width for _, im in people) + gap * (len(people) - 1)
     x = round(W * 0.985) - total
+    placed = []
     for key, im in people:
         canvas.paste(im, (x, H - im.height), im)
+        placed.append((x, x + im.width))
         x += im.width + gap
 
     path = os.path.join(OUT, "directors-team.webp")
     canvas.save(path, "WEBP", quality=88, method=6)
     print("directors-team", canvas.size, os.path.getsize(path) // 1024, "KB")
+
+    # 모바일용: 인물만 타이트하게 담은 별도 이미지 (여백 없이)
+    mh = max(im.height for _, im in people)
+    mw = total
+    pad_x, pad_top = round(mw * 0.03), round(mh * 0.05)
+    mob = Image.new("RGB", (mw + pad_x * 2, mh + pad_top), BG_TOP)
+    g2 = Image.new("RGB", (1, mob.height))
+    for y in range(mob.height):
+        t = y / max(1, mob.height - 1)
+        g2.putpixel((0, y), tuple(round(BG_TOP[i] + (BG_BOT[i] - BG_TOP[i]) * t) for i in range(3)))
+    mob = g2.resize(mob.size)
+    mx = pad_x
+    for key, im in people:
+        mob.paste(im, (mx, mob.height - im.height), im)
+        mx += im.width + gap
+    mob = mob.resize((1200, round(mob.height * 1200 / mob.width)), Image.LANCZOS)
+    mp = os.path.join(OUT, "directors-team-mobile.webp")
+    mob.save(mp, "WEBP", quality=88, method=6)
+    print("directors-team-mobile", mob.size, os.path.getsize(mp) // 1024, "KB")
 
 
 if __name__ == "__main__":
