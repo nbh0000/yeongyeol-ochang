@@ -19,7 +19,7 @@ SRC = {
     "lee": ("06_원장프로필_진료시간표", "KakaoTalk_20260508_174930797_02.jpg"),
 }
 
-W, H = 2000, 1150          # 히어로 캔버스
+W, H = 2400, 1150          # 히어로 캔버스
 BG_TOP, BG_BOT = (243, 240, 234), (228, 223, 213)
 
 
@@ -80,6 +80,58 @@ def keep_largest(rgba):
     return Image.merge("RGBA", (r, g, b, al))
 
 
+
+def head_width(rgba):
+    """머리 폭(픽셀) 추정 — 인물 크기를 얼굴 기준으로 맞추기 위한 값"""
+    a = rgba.split()[3]
+    w, h = a.size
+    px = a.load()
+    widths = []
+    for y in range(int(h * 0.10), int(h * 0.24)):
+        xs = [x for x in range(0, w, 2) if px[x, y] > 128]
+        if xs:
+            widths.append(xs[-1] - xs[0])
+    widths.sort()
+    return widths[len(widths) // 2] if widths else w
+
+
+def normalize(rgba, target_white=236, target_lum=None):
+    """흰 가운을 기준으로 화이트밸런스를 맞추고 전체 밝기를 통일"""
+    r, g, b, a = rgba.split()
+    rp, gp, bp, ap = r.load(), g.load(), b.load(), a.load()
+    w, h = rgba.size
+    sums = [0.0, 0.0, 0.0]
+    cnt = 0
+    lum_sum, lum_cnt = 0.0, 0
+    for y in range(0, h, 3):
+        for x in range(0, w, 3):
+            if ap[x, y] < 200:
+                continue
+            rr, gg, bb = rp[x, y], gp[x, y], bp[x, y]
+            lum = 0.299 * rr + 0.587 * gg + 0.114 * bb
+            lum_sum += lum
+            lum_cnt += 1
+            if lum > 190:                      # 흰 가운 영역
+                sums[0] += rr; sums[1] += gg; sums[2] += bb; cnt += 1
+    if not cnt or not lum_cnt:
+        return rgba, 0
+    mean = [v / cnt for v in sums]
+    lum_mean = lum_sum / lum_cnt
+    gains = [target_white / m if m > 1 else 1.0 for m in mean]
+    if target_lum:
+        k = target_lum / lum_mean
+        gains = [gn * k for gn in gains]
+    gains = [max(0.75, min(1.3, gn)) for gn in gains]
+    ch = [c.point(lambda v, gn=gn: min(255, round(v * gn))) for c, gn in zip((r, g, b), gains)]
+    return Image.merge("RGBA", (ch[0], ch[1], ch[2], a)), lum_mean
+
+
+def ground_shadow(w, h):
+    s = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(s).ellipse([0, 0, w, h], fill=80)
+    return s.filter(ImageFilter.GaussianBlur(h * 0.45))
+
+
 def fit_height(im, h):
     return im.resize((max(1, round(im.width * h / im.height)), h), Image.LANCZOS)
 
@@ -92,60 +144,60 @@ def shadow(size, blur=28, alpha=60):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    canvas = Image.new("RGB", (W, H), BG_TOP)
+    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
 
-    # 배경: 세로 그라데이션 + 부드러운 원형 하이라이트
-    grad = Image.new("RGB", (1, H))
-    for y in range(H):
-        t = y / (H - 1)
-        grad.putpixel((0, y), tuple(round(BG_TOP[i] + (BG_BOT[i] - BG_TOP[i]) * t) for i in range(3)))
-    canvas = grad.resize((W, H))
-    glow = Image.new("L", (W, H), 0)
-    ImageDraw.Draw(glow).ellipse([W * 0.30, -H * 0.5, W * 1.05, H * 1.1], fill=70)
-    canvas = Image.composite(Image.new("RGB", (W, H), (255, 253, 249)), canvas, glow.filter(ImageFilter.GaussianBlur(160)))
+    # ── 인물 보정: 화이트밸런스·밝기를 통일하고 얼굴 크기를 맞춘다 ─────────────
+    raw = {k: cutout(k) for k in ("shin", "kim", "lee")}
+    lums = {k: normalize(v)[1] for k, v in raw.items()}
+    target_lum = sum(lums.values()) / len(lums)
+    norm = {k: normalize(v, target_lum=target_lum)[0] for k, v in raw.items()}
 
-    # 인물 배치: 좌측은 카피 공간, 우측에 세 원장 (가운데 대표원장이 가장 크게)
-    # 왼쪽부터 신재형 · 김현교(대표, 가장 크게) · 이상현 순으로 겹치지 않게 배치
-    order = [("shin", 0.93), ("kim", 1.02), ("lee", 0.93)]
-    people = [(k, fit_height(cutout(k), round(H * hr))) for k, hr in order]
-    gap = -round(W * 0.018)          # 살짝 겹쳐 한 팀처럼 보이게
+    heads = {k: head_width(v) for k, v in norm.items()}
+    target_head = sum(heads.values()) / len(heads)
+    # 대표원장만 아주 살짝 크게(앞쪽에 선 느낌)
+    boost = {"shin": 1.0, "kim": 1.06, "lee": 1.0}
+    sized = {}
+    for k, im in norm.items():
+        f = (target_head / heads[k]) * boost[k]
+        sized[k] = im.resize((max(1, round(im.width * f)), max(1, round(im.height * f))), Image.LANCZOS)
+
+    # 얼굴 높이를 맞추기 위해 머리 꼭대기를 기준선에 정렬 (가운데만 조금 위로)
+    scale = (H * 0.80) / max(im.height for im in sized.values())
+    people = []
+    for k in ("shin", "kim", "lee"):
+        im = sized[k]
+        im = im.resize((max(1, round(im.width * scale)), max(1, round(im.height * scale))), Image.LANCZOS)
+        people.append((k, im))
+
+    gap = -round(W * 0.015)
     total = sum(im.width for _, im in people) + gap * (len(people) - 1)
-    # 우측 62% 영역 안에 들어오도록 축소
-    avail = round(W * 0.53)
+    avail = round(W * 0.45)
     if total > avail:
-        k = avail / total
-        people = [(key, im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)) for key, im in people]
-        gap = round(gap * k)
+        k2 = avail / total
+        people = [(k, im.resize((round(im.width * k2), round(im.height * k2)), Image.LANCZOS)) for k, im in people]
+        gap = round(gap * k2)
         total = sum(im.width for _, im in people) + gap * (len(people) - 1)
-    x = round(W * 0.985) - total
-    placed = []
+
+    head_top = round(H * 0.10)
+    offset = {"shin": round(H * 0.022), "kim": 0, "lee": round(H * 0.022)}
+    x = round(W * 0.975) - total
+    placed, spots = [], []
     for key, im in people:
-        canvas.paste(im, (x, H - im.height), im)
+        spots.append((key, im, x, head_top + offset[key]))
         placed.append((x, x + im.width))
         x += im.width + gap
+    for key, im, px_, py in spots:
+        canvas.paste(im, (px_, py), im)
 
+    # 인물만 타이트하게 잘라 한 장으로 (히어로 우측 칼럼에 그대로 배치)
+    cut = min(py + im.height for _, im, _, py in spots)
+    left = max(0, min(a for a, _ in placed) - round(W * 0.015))
+    right = min(W, max(b for _, b in placed) + round(W * 0.015))
+    team = canvas.crop((left, round(H * 0.045), right, cut))
+    team = team.resize((1600, round(team.height * 1600 / team.width)), Image.LANCZOS)
     path = os.path.join(OUT, "directors-team.webp")
-    canvas.save(path, "WEBP", quality=88, method=6)
-    print("directors-team", canvas.size, os.path.getsize(path) // 1024, "KB")
-
-    # 모바일용: 인물만 타이트하게 담은 별도 이미지 (여백 없이)
-    mh = max(im.height for _, im in people)
-    mw = total
-    pad_x, pad_top = round(mw * 0.03), round(mh * 0.05)
-    mob = Image.new("RGB", (mw + pad_x * 2, mh + pad_top), BG_TOP)
-    g2 = Image.new("RGB", (1, mob.height))
-    for y in range(mob.height):
-        t = y / max(1, mob.height - 1)
-        g2.putpixel((0, y), tuple(round(BG_TOP[i] + (BG_BOT[i] - BG_TOP[i]) * t) for i in range(3)))
-    mob = g2.resize(mob.size)
-    mx = pad_x
-    for key, im in people:
-        mob.paste(im, (mx, mob.height - im.height), im)
-        mx += im.width + gap
-    mob = mob.resize((1200, round(mob.height * 1200 / mob.width)), Image.LANCZOS)
-    mp = os.path.join(OUT, "directors-team-mobile.webp")
-    mob.save(mp, "WEBP", quality=88, method=6)
-    print("directors-team-mobile", mob.size, os.path.getsize(mp) // 1024, "KB")
+    team.save(path, "WEBP", quality=90, method=6, lossless=False, exact=False)
+    print("directors-team", team.size, os.path.getsize(path) // 1024, "KB")
 
 
 if __name__ == "__main__":
