@@ -45,4 +45,4 @@ python serve.py        # http://localhost:8791 로 브라우저가 열립니다
 ## 배포
 
 `docs/` 폴더 안의 파일을 그대로 웹호스팅(카페24·가비아·Netlify·Vercel·GitHub Pages 등)에 업로드하면 됩니다.
-도메인은 `src/site_info.py`의 `url` 값(현재 https://www.yeongyeolochang.co.kr)을 기준으로 canonical·sitemap이 생성됩니다.
+도메인은 `src/site_info.py`의 `url` 값(현재 https://www.yeongyeolochangkmc.co.kr)을 기준으로 canonical·sitemap이 생성됩니다.

@@ -6,7 +6,7 @@ SITE = {
     "short": "연결한의원",
     "branch": "청주오창",
     "branch_en": "CHEONGJU · OCHANG",
-    "url": "https://www.yeongyeolochang.co.kr",
+    "url": "https://www.yeongyeolochangkmc.co.kr",
     "title": "연결한의원 청주오창 | 청주·오창 한의원",
     "description": "연결한의원 청주오창은 청주·오창 생활권에서 증상 단계와 체질에 맞춰 추나·약침·한약 치료를 진행하는 365일 진료 한의원입니다. 평일 야간진료, 모든 치료실 1인실 운영.",
     "keywords": "오창한의원,청주한의원,청원구한의원,오창읍 한의원,오창 한의원 추천,청주 한의원 추천,오창 추나요법,오창 교통사고 한의원,오창 공진단,청주 한방다이어트,오창 야간진료 한의원,365일 한의원",

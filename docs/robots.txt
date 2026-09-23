@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://www.yeongyeolochang.co.kr/sitemap.xml
+Sitemap: https://www.yeongyeolochangkmc.co.kr/sitemap.xml
