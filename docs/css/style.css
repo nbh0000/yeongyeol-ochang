@@ -547,3 +547,74 @@ button { font-family: inherit; cursor: pointer; }
 .col-list b { font-weight: 500; font-size: 14.5px; }
 @media (max-width: 900px) { .cond-list { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .cond-list { grid-template-columns: 1fr; } }
+
+/* ── 모바일 최적화 ─────────────────────────────────────────────────────── */
+.cond-group[data-group] > summary { list-style: none; cursor: pointer; }
+.cond-group[data-group] > summary::-webkit-details-marker { display: none; }
+.cond-group[data-group] > summary::after {
+  content: "−"; margin-left: auto; font-size: 20px; color: var(--inkfade); line-height: 1;
+}
+.cond-group[data-group]:not([open]) > summary::after { content: "+"; }
+
+@media (min-width: 901px) {
+  .cond-group[data-group] > summary { cursor: default; }
+  .cond-group[data-group] > summary::after { display: none; }
+}
+
+@media (max-width: 900px) {
+  /* 분류 칩: 줄바꿈 대신 가로 스크롤 */
+  .cat-nav {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    margin: 0 -24px 28px; padding: 0 24px 4px; scroll-snap-type: x proximity;
+  }
+  .cat-nav::-webkit-scrollbar { display: none; }
+  .cat-nav a { flex: none; scroll-snap-align: start; padding: 8px 14px; font-size: 13.5px; }
+
+  .cond-group { margin-bottom: 18px; border-bottom: 1px solid var(--line); }
+  .cond-group-head { padding: 16px 2px; margin-bottom: 0; border-bottom: 0; align-items: center; }
+  .cond-group-head .h2 { font-size: 18px; }
+  .cond-group-head .count { font-size: 12.5px; }
+  .cond-group[data-group][open] > .cond-list { padding-bottom: 18px; }
+
+  .cond-list { gap: 8px; }
+  .cond-list a { padding: 12px 14px; }
+  .cond-list b { font-size: 14.5px; }
+  .cond-list .med { font-size: 12px; margin-top: 2px; }
+
+  /* 상세 페이지 본문 간격·글자 크기 */
+  .prose h2 { font-size: 20px; margin: 34px 0 12px; }
+  .prose h3 { font-size: 17px; }
+  .prose p, .prose li { font-size: 15.5px; }
+  .quote-list li { font-size: 15px; }
+  .answer-box, .note-box, .redflag { padding: 18px 18px; }
+  .detail-layout { gap: 32px; }
+  .page-hero { padding: 40px 0 34px; }
+  .page-hero h1 { font-size: clamp(23px, 6.2vw, 30px); }
+  .page-hero .lead { font-size: 15.5px; }
+  .breadcrumb { font-size: 12.5px; margin-bottom: 14px; }
+  .tag-list a { font-size: 12.5px; padding: 7px 12px; }
+  .btn-lg { padding: 13px 20px; font-size: 15px; }
+  .section { padding: 44px 0; }
+  .section-head { margin-bottom: 22px; }
+  .gallery { gap: 8px; }
+  .steps { gap: 10px; }
+  .step { padding: 16px 14px; }
+  .side-card { padding: 20px; }
+}
+
+@media (max-width: 560px) {
+  .container { padding: 0 18px; }
+  .cat-nav { margin: 0 -18px 24px; padding: 0 18px 4px; }
+  .hero-copy { padding: 44px 0 24px; }
+  .btn-group .btn { flex: 1 1 auto; }
+}
+
+/* 맨 위로 버튼 (모바일) */
+.to-top {
+  position: fixed; right: 16px; bottom: 62px; z-index: 39; width: 44px; height: 44px;
+  border-radius: 50%; border: 1px solid var(--line); background: rgba(255,255,255,.94);
+  color: var(--ink); font-size: 18px; line-height: 1; display: none; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(36,35,33,.12);
+}
+.to-top.show { display: flex; }
+@media (min-width: 901px) { .to-top { display: none !important; } }

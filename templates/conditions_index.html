@@ -28,11 +28,11 @@
     </nav>
 
     {% for cat in categories %}
-    <section class="cond-group" id="{{ cat.id }}" data-reveal>
-      <div class="cond-group-head">
+    <details class="cond-group" id="{{ cat.id }}" data-group open>
+      <summary class="cond-group-head">
         <h2 class="h2">{{ cat.name }}</h2>
         <span class="count">{{ cat.rows|length }}개 질환</span>
-      </div>
+      </summary>
       <ul class="cond-list">
         {% for c in cat.rows %}
         <li><a href="{{ root }}conditions/{{ c.slug | urlencode }}.html">
@@ -41,7 +41,7 @@
         </a></li>
         {% endfor %}
       </ul>
-    </section>
+    </details>
     {% endfor %}
 
     <div class="notice" style="margin-top:40px">본 페이지의 의학 정보는 이해를 돕기 위한 일반적인 내용으로, 개인의 진단과 치료를 대신하지 않습니다. 정확한 진단은 내원 진료를 통해 받으시기 바랍니다.</div>

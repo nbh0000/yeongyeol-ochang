@@ -27,11 +27,11 @@
     </nav>
 
     {% for g in groups %}
-    <section class="cond-group" id="{{ g.id }}" data-reveal>
-      <div class="cond-group-head">
+    <details class="cond-group" id="{{ g.id }}" data-group open>
+      <summary class="cond-group-head">
         <h2 class="h2">{{ g.name }}</h2>
         <span class="count">{{ g.rows|length }}편</span>
-      </div>
+      </summary>
       <ul class="cond-list col-list">
         {% for c in g.rows %}
         <li><a href="{{ root }}column/{{ c.slug | urlencode }}.html">
@@ -40,7 +40,7 @@
         </a></li>
         {% endfor %}
       </ul>
-    </section>
+    </details>
     {% endfor %}
 
     <div class="notice" style="margin-top:40px">본 건강정보는 이해를 돕기 위한 일반적인 내용으로, 개인의 진단과 치료를 대신하지 않습니다. 증상이 지속되면 내원 진료를 통해 확인해 주세요.</div>

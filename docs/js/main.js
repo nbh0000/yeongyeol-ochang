@@ -123,6 +123,45 @@
     input.addEventListener("input", run);
   }
 
+  // ── 모바일: 긴 목록은 첫 분류만 펼치고 나머지는 접기 ─────────────────────
+  var groups = document.querySelectorAll("details[data-group]");
+  if (groups.length > 2 && window.innerWidth <= 900 && !/[?&]capture=1/.test(location.search)) {
+    groups.forEach(function (g, i) { if (i > 0) g.removeAttribute("open"); });
+  }
+  // 분류 칩을 누르면 해당 그룹을 펼친 뒤 이동
+  function openTarget() {
+    var id = location.hash.slice(1);
+    if (!id) return;
+    var el = document.getElementById(id);
+    if (el && el.tagName === "DETAILS") el.setAttribute("open", "");
+  }
+  if (groups.length) {
+    document.querySelectorAll(".cat-nav a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        var el = document.getElementById(a.getAttribute("href").slice(1));
+        if (el && el.tagName === "DETAILS") el.setAttribute("open", "");
+      });
+    });
+    window.addEventListener("hashchange", openTarget);
+    openTarget();
+  }
+
+  // ── 맨 위로 버튼 (모바일) ────────────────────────────────────────────────
+  if (window.innerWidth <= 900) {
+    var top = document.createElement("button");
+    top.type = "button";
+    top.className = "to-top";
+    top.setAttribute("aria-label", "맨 위로");
+    top.textContent = "↑";
+    top.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+    document.body.appendChild(top);
+    var tick;
+    window.addEventListener("scroll", function () {
+      clearTimeout(tick);
+      tick = setTimeout(function () { top.classList.toggle("show", window.scrollY > 700); }, 80);
+    }, { passive: true });
+  }
+
   // ── 숫자 카운트업 ─────────────────────────────────────────────────────────
   var counters = document.querySelectorAll("[data-count]");
   function countUp(el) {
