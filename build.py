@@ -131,7 +131,7 @@ def search_index():
 def jsonld(page_path, extra=None):
     data = {
         "@context": "https://schema.org", "@type": "MedicalClinic", "name": SITE["name"],
-        "url": SITE["url"] + "/" + page_path, "telephone": "+82-" + SITE["phone"][1:],
+        "url": canon(page_path), "telephone": "+82-" + SITE["phone"][1:],
         "image": SITE["url"] + "/images/hero/directors-team.webp",
         "logo": SITE["url"] + "/images/logo/symbol-green-512.png",
         "address": {"@type": "PostalAddress", "streetAddress": "오창읍 2산단로 132, 301·302호",
@@ -148,6 +148,17 @@ def jsonld(page_path, extra=None):
     return json.dumps([data, extra] if extra else data, ensure_ascii=False, indent=1)
 
 
+def canon(path):
+    """Cloudflare Workers는 .html 없이 서빙하므로 정식 주소(canonical/sitemap)도 맞춘다."""
+    if path == "index.html":
+        return SITE["url"] + "/"
+    if path.endswith("/index.html"):
+        return SITE["url"] + "/" + path[: -len("/index.html")] + "/"
+    if path.endswith(".html"):
+        return SITE["url"] + "/" + path[: -len(".html")]
+    return SITE["url"] + "/" + path
+
+
 PAGES = []
 
 
@@ -155,7 +166,7 @@ def render(template, out_path, **ctx):
     root = "../" * out_path.count("/")
     base = dict(site=SITE, nav=NAV, services=SERVICES, conditions=CONDITIONS, columns=COLUMNS,
                 directors=DIRECTORS, directors_by_name={d["name"]: d for d in DIRECTORS},
-                root=root, page_path=out_path, jsonld=ctx.pop("jsonld", None) or jsonld(out_path))
+                root=root, page_path=out_path, canonical=canon(out_path), jsonld=ctx.pop("jsonld", None) or jsonld(out_path))
     base.update(ctx)
     html = env.get_template(template).render(**base)
     full = os.path.join(OUT, urllib.parse.unquote(out_path).replace("/", os.sep))

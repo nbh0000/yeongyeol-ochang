@@ -7,13 +7,13 @@
 <meta name="description" content="{% block description %}{{ site.description }}{% endblock %}">
 <meta name="keywords" content="{% block keywords %}{{ site.keywords }}{% endblock %}">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="{{ site.url }}/{{ page_path }}">
+<link rel="canonical" href="{{ canonical }}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{{ site.name }}">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="{{ self.title() }}">
 <meta property="og:description" content="{{ self.description() }}">
-<meta property="og:url" content="{{ site.url }}/{{ page_path }}">
+<meta property="og:url" content="{{ canonical }}">
 <meta property="og:image" content="{{ site.url }}/{% block og_image %}images/hero/directors-team.webp{% endblock %}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{{ root }}images/logo/symbol-green-512.png" type="image/png">
